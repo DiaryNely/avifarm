@@ -1,0 +1,211 @@
+.confirm-text { padding: 8px 0; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Cartes de synthèse ── */
+.stat-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 16px 20px;
+  flex: 1;
+  min-width: 160px;
+
+  .stat-icon {
+    font-size: 32px;
+    color: var(--text-secondary, #6b7280);
+  }
+  .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary, #111827);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary, #6b7280);
+    margin-top: 2px;
+  }
+
+  &--alive {
+    border-color: #d1fae5;
+    .stat-icon { color: #10b981; }
+    .stat-value { color: #059669; }
+  }
+  &--dead {
+    border-color: #fee2e2;
+    .stat-icon { color: #ef4444; }
+    .stat-value { color: #dc2626; }
+  }
+}
+
+/* ── Section titre ── */
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+/* ── Grille effectifs par lot ── */
+.effectifs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.effectif-card {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.effectif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.effectif-lot {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.badge-race {
+  font-size: 11px;
+  background: var(--primary-50, #eff6ff);
+  color: var(--primary-600, #2563eb);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-weight: 500;
+}
+
+.effectif-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.effectif-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+
+  .material-icons-round { font-size: 15px; }
+
+  &--alive { color: #10b981; }
+  &--dead  { color: #ef4444; }
+}
+
+/* ── Barre de progression mortalité ── */
+.mortalite-bar {
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.mortalite-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316, #ef4444);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+  max-width: 100%;
+}
+
+.mortalite-rate {
+  font-size: 11px;
+  color: var(--text-secondary, #6b7280);
+  text-align: right;
+}
+
+/* ── Barre de filtre ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+
+  select {
+    flex: 1;
+    max-width: 240px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+    font-size: 13px;
+    background: var(--input-bg, #fff);
+    color: var(--text-primary, #111827);
+  }
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+  white-space: nowrap;
+
+  .material-icons-round { font-size: 16px; }
+}
+
+/* ── Hint effectif dans le formulaire ── */
+.effectif-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  grid-column: 1 / -1;
+
+  .material-icons-round { font-size: 16px; }
+}
+
+/* ── Erreur de formulaire ── */
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  grid-column: 1 / -1;
+
+  .material-icons-round { font-size: 16px; }
+}
+
+/* ── Badge succès ── */
+.badge-success {
+  background: #d1fae5;
+  color: #059669;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}

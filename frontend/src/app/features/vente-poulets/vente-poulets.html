@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons-round">storefront</span> Vente des Poulets</h1>
+      <p class="page-subtitle">Enregistrement des ventes de poulets par lot</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons-round">add</span> Nouvelle vente
+    </button>
+  </div>
+
+  @if (error) { <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div> }
+
+  <div class="card">
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div> Chargement...</div>
+    } @else if (items.length === 0) {
+      <div class="empty-state"><span class="material-icons-round">storefront</span><p>Aucune vente de poulets enregistrée</p></div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr><th>#</th><th>Lot</th><th>Date</th><th>Nb Vendus</th><th>Poids Moy. (g)</th><th>Prix/g (Ar)</th><th>Total (Ar)</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            @for (v of items; track v.vente_id) {
+              <tr>
+                <td class="cell-id">{{ v.vente_id }}</td>
+                <td class="cell-name">{{ lotNum(v.lot_id) }}</td>
+                <td>{{ v.date_vente | date:'dd/MM/yyyy' }}</td>
+                <td>{{ v.nombre_vendus }}</td>
+                <td>{{ v.poids_moyen_g | number:'1.0-0' }}</td>
+                <td>{{ v.prix_vente_g | number:'1.2-2' }}</td>
+                <td class="cell-name">{{ v.montant_total ?? computeTotal(v) | number:'1.0-0' }}</td>
+                <td class="cell-actions">
+                  <button class="btn-icon btn-edit" (click)="openEdit(v)"><span class="material-icons-round">edit</span></button>
+                  <button class="btn-icon btn-delete" (click)="confirmDelete(v.vente_id!)"><span class="material-icons-round">delete</span></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<app-modal [title]="editId ? 'Modifier la vente' : 'Nouvelle vente de poulets'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  @if (saveError) {
+    <div class="error-msg"><span class="material-icons-round">error</span>{{ saveError }}</div>
+  }
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Lot *</label>
+      <select [(ngModel)]="form.lot_id">
+        <option value="" disabled>Choisir un lot</option>
+        @for (l of lots; track l.lot_id) {
+          <option [value]="l.lot_id">{{ l.numero }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Date de Vente *</label>
+      <input type="date" [(ngModel)]="form.date_vente" />
+    </div>
+    <div class="form-group">
+      <label>Nombre Vendus *</label>
+      <input type="number" [(ngModel)]="form.nombre_vendus" min="1" />
+    </div>
+    <div class="form-group">
+      <label>Poids Moyen (g) *</label>
+      <input type="number" [(ngModel)]="form.poids_moyen_g" step="0.01" min="0" />
+    </div>
+    <div class="form-group form-full">
+      <label>Prix de Vente (Ar/g) *</label>
+      <input type="number" [(ngModel)]="form.prix_vente_g" step="0.01" min="0" />
+    </div>
+  </div>
+</app-modal>
+
+<app-modal title="Confirmer la suppression" [show]="showConfirm" saveBtnLabel="Supprimer" saveBtnClass="btn btn-danger" (closed)="showConfirm=false" (saved)="doDelete()">
+  <p class="confirm-text">Voulez-vous supprimer cette vente ?</p>
+</app-modal>

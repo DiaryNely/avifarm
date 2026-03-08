@@ -1,0 +1,268 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons-round">dashboard</span>
+        Tableau de bord
+      </h1>
+      <p class="page-subtitle">Vue d'ensemble de votre élevage</p>
+    </div>
+  </div>
+
+  <!-- ── Stat cards globales ── -->
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div> Chargement...</div>
+  } @else {
+    <div class="stats-grid">
+      @for (s of stats; track s.label) {
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--{{ s.color }}">
+            <span class="material-icons-round">{{ s.icon }}</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value">{{ s.value }}</div>
+            <div class="stat-label">{{ s.label }}</div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Accès Rapide ── -->
+    <h2 class="section-title">
+      <span class="material-icons-round">bolt</span> Accès Rapide
+    </h2>
+    <div class="quick-grid">
+      @for (q of quickLinks; track q.path) {
+        <a class="quick-card" [routerLink]="q.path">
+          <span class="material-icons-round quick-icon">{{ q.icon }}</span>
+          <span class="quick-label">{{ q.label }}</span>
+          <span class="material-icons-round quick-arrow">arrow_forward</span>
+        </a>
+      }
+    </div>
+
+    <!-- ── Situation d'un lot (filtre) ── -->
+    @if (situations.length > 0) {
+      <h2 class="section-title">
+        <span class="material-icons-round">assessment</span> Situation d'un lot
+      </h2>
+
+      <div class="sit-filter-bar">
+        <div class="sit-filter-bar__left">
+          <span class="material-icons-round">inventory_2</span>
+          <select [(ngModel)]="selectedLotId">
+            @for (s of situations; track s.lot_id) {
+              <option [ngValue]="s.lot_id">{{ s.numero }} &mdash; {{ s.race }}</option>
+            }
+          </select>
+        </div>
+        @if (selectedSit) {
+          <div class="sit-filter-bar__meta">
+            <span class="tag tag--blue">
+              <span class="material-icons-round">calendar_today</span>
+              Entrée le {{ selectedSit.date_entree | date:'dd/MM/yyyy' }}
+            </span>
+            <span class="tag tag--purple">
+              <span class="material-icons-round">timer</span>
+              Semaine {{ selectedSit.semaine_actuelle }}
+            </span>
+            <span class="tag" [ngClass]="selectedSit.actif ? 'tag--green' : 'tag--neutral'">
+              <span class="material-icons-round">{{ selectedSit.actif ? 'check_circle' : 'cancel' }}</span>
+              {{ selectedSit.actif ? 'Actif' : 'Fermé' }}
+            </span>
+          </div>
+        }
+      </div>
+
+      @if (selectedSit) {
+        @let sit = selectedSit;
+        <div class="sit-kpi-grid">
+
+          <div class="kpi-group">
+            <div class="kpi-group__title">Élevage</div>
+            <div class="kpi-group__cards">
+              <div class="kpi-card kpi-card--green">
+                <span class="material-icons-round">egg_alt</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Vivants</div>
+                  <div class="kpi-card__value">{{ sit.nombre_actuel | number }}</div>
+                  <div class="kpi-card__sub">/ {{ sit.nombre_actuel + sit.total_morts + sit.total_vendus }}</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-card--red">
+                <span class="material-icons-round">heart_broken</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Morts</div>
+                  <div class="kpi-card__value">{{ sit.total_morts | number }}</div>
+                  <div class="kpi-card__sub">{{ sit.taux_mortalite }}&nbsp;%</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-card--neutral">
+                <span class="material-icons-round">shopping_cart</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Vendus</div>
+                  <div class="kpi-card__value">{{ sit.total_vendus | number }}</div>
+                  <div class="kpi-card__sub">poulets</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-group">
+            <div class="kpi-group__title">Poids</div>
+            <div class="kpi-group__cards">
+              <div class="kpi-card kpi-card--blue">
+                <span class="material-icons-round">monitor_weight</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Poids moyen</div>
+                  <div class="kpi-card__value">{{ sit.poids_moyen_g | number:'1.0-0' }}&nbsp;g</div>
+                  <div class="kpi-card__sub">par poulet</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-card--blue">
+                <span class="material-icons-round">scale</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Poids total</div>
+                  <div class="kpi-card__value">{{ sit.poids_total_g / 1000 | number:'1.1-1' }}&nbsp;kg</div>
+                  <div class="kpi-card__sub">lot entier</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-group">
+            <div class="kpi-group__title">Alimentation</div>
+            <div class="kpi-group__cards">
+              <div class="kpi-card kpi-card--orange">
+                <span class="material-icons-round">set_meal</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Nourriture</div>
+                  <div class="kpi-card__value">{{ sit.nourrit_total_g / 1000 | number:'1.1-1' }}&nbsp;kg</div>
+                  <div class="kpi-card__sub">consommée</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-card--orange">
+                <span class="material-icons-round">payments</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Coût nourrit.</div>
+                  <div class="kpi-card__value">{{ sit.cout_nourrit_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">cumulé</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-group">
+            <div class="kpi-group__title">Revenus</div>
+            <div class="kpi-group__cards">
+              <div class="kpi-card kpi-card--amber">
+                <span class="material-icons-round">egg</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Œufs</div>
+                  <div class="kpi-card__value">{{ sit.total_oeufs | number }}</div>
+                  <div class="kpi-card__sub">{{ sit.revenu_oeufs_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-card--teal">
+                <span class="material-icons-round">storefront</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Ventes poulets</div>
+                  <div class="kpi-card__value">{{ sit.revenu_vente_poulets_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">réalisé</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-card--blue">
+                <span class="material-icons-round">trending_up</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Valeur est.</div>
+                  <div class="kpi-card__value">{{ sit.valeur_poulets_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">au poids actuel</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-group kpi-group--bilan">
+            <div class="kpi-group__title">Bilan</div>
+            <div class="kpi-group__cards">
+              <div class="kpi-card kpi-card--red">
+                <span class="material-icons-round">receipt_long</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Coût d'achat</div>
+                  <div class="kpi-card__value">{{ sit.cout_achat_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">achat du lot</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-bilan" [ngClass]="sit.benefice_ar >= 0 ? 'kpi-card--green' : 'kpi-card--red'">
+                <span class="material-icons-round">{{ sit.benefice_ar >= 0 ? 'trending_up' : 'trending_down' }}</span>
+                <div class="kpi-card__body">
+                  <div class="kpi-card__label">Bénéfice net</div>
+                  <div class="kpi-card__value kpi-card__value--lg">{{ sit.benefice_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">{{ sit.benefice_ar >= 0 ? '✓ Positif' : '✗ Négatif' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      }
+    }
+
+    <!-- ── Stats par lots ── -->
+    @if (situations.length > 0) {
+      <h2 class="section-title">
+        <span class="material-icons-round">table_chart</span> Stats par lots
+      </h2>
+      <div class="card lots-table-card">
+        <div class="table-wrapper">
+          <table class="table lots-stat-table">
+            <thead>
+              <tr>
+                <th>Lot</th>
+                <th>Race</th>
+                <th class="txt-center">Sem.</th>
+                <th class="txt-center">Vivants</th>
+                <th class="txt-center">Morts&nbsp;%</th>
+                <th class="txt-center">Poids moy.</th>
+                <th class="txt-right">Nourriture</th>
+                <th class="txt-center">Œufs</th>
+                <th class="txt-right">Bénéfice</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of situations; track s.lot_id) {
+                <tr [class.row-selected]="s.lot_id === selectedLotId" (click)="selectedLotId = s.lot_id">
+                  <td class="cell-name">
+                    <span class="lot-badge">{{ s.numero }}</span>
+                  </td>
+                  <td class="cell-race">{{ s.race }}</td>
+                  <td class="txt-center">
+                    <span class="week-pill">S{{ s.semaine_actuelle }}</span>
+                  </td>
+                  <td class="txt-center">
+                    <span class="badge badge-success">{{ s.nombre_actuel | number }}</span>
+                  </td>
+                  <td class="txt-center">
+                    @if (s.taux_mortalite > 0) {
+                      <span class="badge badge-danger">{{ s.taux_mortalite }}&nbsp;%</span>
+                    } @else {
+                      <span class="badge badge-neutral">0&nbsp;%</span>
+                    }
+                  </td>
+                  <td class="txt-center">{{ s.poids_moyen_g | number:'1.0-0' }}&nbsp;g</td>
+                  <td class="txt-right">{{ s.nourrit_total_g / 1000 | number:'1.1-1' }}&nbsp;kg</td>
+                  <td class="txt-center">{{ s.total_oeufs | number }}</td>
+                  <td class="txt-right benef-cell" [ngClass]="s.benefice_ar >= 0 ? 'benef--pos' : 'benef--neg'">
+                    <span class="material-icons-round">{{ s.benefice_ar >= 0 ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    {{ s.benefice_ar | number:'1.0-0' }}&nbsp;Ar
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+  }
+</div>

@@ -1,0 +1,207 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons-round">egg</span> Incubations</h1>
+      <p class="page-subtitle">Suivi des oeufs en incubation et des éclosions</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons-round">add</span> Nouvelle incubation
+    </button>
+  </div>
+
+  @if (error) { <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div> }
+
+  <div class="card">
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div> Chargement...</div>
+    } @else if (items.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons-round">egg</span>
+        <p>Aucune incubation enregistrée</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Lot parent</th>
+              <th>Enreg. oeufs</th>
+              <th>Nb incubés</th>
+              <th>Date début</th>
+              <th>Date éclosion</th>
+              <th>Statut</th>
+              <th>Lot créé</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of items; track i.incubation_id) {
+              <tr>
+                <td class="cell-id">{{ i.incubation_id }}</td>
+                <td class="cell-name">{{ i.lot_numero }}</td>
+                <td>
+                  {{ i.date_collecte | date:'dd/MM/yyyy' }}
+                  <span class="oeufs-restants">({{ i.nombre_oeufs }} restants)</span>
+                </td>
+                <td><strong>{{ i.nombre_incubes }}</strong></td>
+                <td>{{ i.date_debut   | date:'dd/MM/yyyy' }}</td>
+                <td>{{ i.date_eclosion | date:'dd/MM/yyyy' }}</td>
+                <td><span class="badge" [class]="statutClass(i.statut)">{{ statutLabel(i.statut) }}</span></td>
+                <td>
+                  @if (i.lot_issu_numero) {
+                    <span class="badge badge-success lot-issu-badge">{{ i.lot_issu_numero }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td class="cell-actions">
+                  @if (i.statut === 'en_cours') {
+                    <button class="btn-icon btn-eclosion" (click)="openEclosion(i)" title="Enregistrer l'éclosion">
+                      <span class="material-icons-round">hive</span>
+                    </button>
+                  }
+                  <button class="btn-icon btn-delete" (click)="confirmDelete(i.incubation_id!)" title="Supprimer">
+                    <span class="material-icons-round">delete</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal : nouvelle incubation -->
+<app-modal title="Nouvelle incubation" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  <div class="form-grid">
+    <div class="form-group form-full">
+      <label>Lot parent *</label>
+      <select [(ngModel)]="formLotId" (ngModelChange)="onLotChange()">
+        <option [ngValue]="null" disabled>Choisir un lot…</option>
+        @for (l of lots; track l.lot_id) {
+          <option [ngValue]="l.lot_id">{{ l.numero }}</option>
+        }
+      </select>
+    </div>
+
+    @if (formLotId) {
+      <!-- Résumé stock oeufs du lot -->
+      <div class="form-group form-full">
+        <div class="lot-stock-summary">
+          <div class="stock-item">
+            <span class="material-icons-round">egg_alt</span>
+            <div>
+              <div class="stock-label">Oeufs disponibles (total du lot)</div>
+              <div class="stock-val">{{ totalOeufsLot }}</div>
+            </div>
+          </div>
+          <div class="stock-item stock-item--used">
+            <span class="material-icons-round">science</span>
+            <div>
+              <div class="stock-label">Déjà en incubation (en cours)</div>
+              <div class="stock-val">{{ oeufsDejaIncubes }}</div>
+            </div>
+          </div>
+          <div class="stock-item stock-item--rule">
+            <span class="material-icons-round">info</span>
+            <div class="stock-label">Le nombre incubé ne peut pas dépasser le stock disponible de l’enregistrement sélectionné.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group form-full">
+        <label>Enregistrement d'oeufs *</label>
+        @if (filteredOeufs.length === 0) {
+          <p class="form-hint warn">Aucun enregistrement d'oeufs pour ce lot.</p>
+        } @else {
+          <select [(ngModel)]="form.oeuf_id" (ngModelChange)="formError=''">
+            <option [ngValue]="null" disabled>Choisir un enregistrement…</option>
+            @for (o of filteredOeufs; track o.oeuf_id) {
+              <option [ngValue]="o.oeuf_id">
+                {{ o.date_collecte | date:'dd/MM/yyyy' }} — {{ o.nombre_oeufs }} oeuf(s) disponibles
+              </option>
+            }
+          </select>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Nombre à incuber *</label>
+        <input type="number" [(ngModel)]="form.nombre_incubes" min="1" [max]="selectedOeuf?.nombre_oeufs ?? null" (ngModelChange)="formError=''" />
+        @if (selectedOeuf) {
+          <span class="form-hint">Max : <strong>{{ selectedOeuf.nombre_oeufs }}</strong> oeuf(s) disponibles dans cet enregistrement</span>
+        }
+        @if (nombreIncubesError) {
+          <span class="form-hint error">{{ nombreIncubesError }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Date début *</label>
+        <input type="date" [(ngModel)]="form.date_debut" (ngModelChange)="computeEclosionPreview()" />
+      </div>
+
+      @if (dateEclosionPreview) {
+        <div class="form-group form-full">
+          <div class="eclosion-preview">
+            <span class="material-icons-round">event</span>
+            Date d'éclosion prévue : <strong>{{ dateEclosionPreview | date:'dd/MM/yyyy' }}</strong>
+            <span class="hint">({{ selectedRace?.nom }} — {{ selectedRace?.duree_incubation }} jours)</span>
+          </div>
+        </div>
+      }
+    }
+
+    @if (formError) {
+      <div class="form-group form-full">
+        <div class="error-msg"><span class="material-icons-round">error</span>{{ formError }}</div>
+      </div>
+    }
+  </div>
+</app-modal>
+
+<!-- Modal : éclosion -->
+<app-modal title="Enregistrer une éclosion" [show]="showEclosionModal" [saving]="eclosionSaving" (closed)="showEclosionModal=false" (saved)="saveEclosion()">
+  @if (eclosionItem) {
+    <div class="eclosion-info">
+      <div class="info-row">
+        <span class="info-label">Lot parent</span>
+        <span class="info-val">{{ eclosionItem.lot_numero }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Oeufs incubés</span>
+        <span class="info-val">{{ eclosionItem.nombre_incubes }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Date éclosion prévue</span>
+        <span class="info-val">{{ eclosionItem.date_eclosion | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Nouveau lot</span>
+        <span class="info-val info-hint">Nom généré automatiquement</span>
+      </div>
+    </div>
+    <div class="form-grid" style="margin-top:16px">
+      <div class="form-group form-full">
+        <label>Nombre de poussins éclos *</label>
+        <input type="number" [(ngModel)]="eclosionForm.nombre_eclos" min="1" [max]="eclosionItem.nombre_incubes" />
+        <span class="form-hint">Max : {{ eclosionItem.nombre_incubes }} (= nb d’oeufs incubés)</span>
+      </div>
+    </div>
+    @if (eclosionError) {
+      <div class="error-msg" style="margin-top:8px"><span class="material-icons-round">error</span>{{ eclosionError }}</div>
+    }
+  }
+</app-modal>
+
+<!-- Modal : confirmation suppression -->
+<app-modal title="Confirmer la suppression" [show]="showConfirm" (closed)="showConfirm=false" (saved)="doDelete()">
+  <p class="confirm-text">Supprimer cette incubation ? Les oeufs retirés seront restaurés dans l’enregistrement source.</p>
+</app-modal>
+
+<app-modal title="Confirmer la suppression" [show]="showConfirm" saveBtnLabel="Supprimer" saveBtnClass="btn btn-danger" (closed)="showConfirm=false" (saved)="doDelete()">
+  <p class="confirm-text">Voulez-vous supprimer cette incubation ?</p>
+</app-modal>

@@ -1,0 +1,82 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons-round">pets</span> Races</h1>
+      <p class="page-subtitle">Gestion des races de poulets et paramètres de croissance</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons-round">add</span> Ajouter
+    </button>
+  </div>
+
+  @if (error) { <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div> }
+
+  <div class="card">
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div> Chargement...</div>
+    } @else if (races.length === 0) {
+      <div class="empty-state"><span class="material-icons-round">pets</span><p>Aucune race enregistrée</p></div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th><th>Nom</th><th>Nourrit. (Ar/g)</th><th>Vente (Ar/g)</th>
+              <th>Oeuf (Ar)</th><th>Sem. Ponte</th><th>Incub. (j)</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of races; track r.race_id) {
+              <tr>
+                <td class="cell-id">{{ r.race_id }}</td>
+                <td class="cell-name">{{ r.nom }}</td>
+                <td>{{ r.prix_nourrit_g | number:'1.2-2' }}</td>
+                <td>{{ r.prix_vente_g | number:'1.2-2' }}</td>
+                <td>{{ r.prix_oeuf | number:'1.2-2' }}</td>
+                <td>{{ r.semaine_ponte }}</td>
+                <td>{{ r.duree_incubation }}</td>
+                <td class="cell-actions">
+                  <button class="btn-icon btn-edit" (click)="openEdit(r)" title="Modifier"><span class="material-icons-round">edit</span></button>
+                  <button class="btn-icon btn-delete" (click)="confirmDelete(r.race_id!)" title="Supprimer"><span class="material-icons-round">delete</span></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<app-modal [title]="editId ? 'Modifier la race' : 'Nouvelle race'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  <div class="form-grid">
+    <div class="form-group form-full">
+      <label>Nom *</label>
+      <input type="text" [(ngModel)]="form.nom" placeholder="Ex: Cobb 500" />
+    </div>
+    <div class="form-group">
+      <label>Prix Nourriture (Ar/g) *</label>
+      <input type="number" [(ngModel)]="form.prix_nourrit_g" step="0.01" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Prix Vente (Ar/g) *</label>
+      <input type="number" [(ngModel)]="form.prix_vente_g" step="0.01" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Prix Oeuf (Ar) *</label>
+      <input type="number" [(ngModel)]="form.prix_oeuf" step="0.01" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Semaine de Ponte *</label>
+      <input type="number" [(ngModel)]="form.semaine_ponte" min="1" />
+    </div>
+    <div class="form-group">
+      <label>Durée Incubation (jours) *</label>
+      <input type="number" [(ngModel)]="form.duree_incubation" min="1" />
+    </div>
+  </div>
+</app-modal>
+
+<app-modal title="Confirmer la suppression" [show]="showConfirm" saveBtnLabel="Supprimer" saveBtnClass="btn btn-danger" (closed)="showConfirm=false" (saved)="doDelete()">
+  <p class="confirm-text">Êtes-vous sûr de vouloir supprimer cette race ? Cette action est irréversible.</p>
+</app-modal>

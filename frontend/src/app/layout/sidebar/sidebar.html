@@ -1,0 +1,18 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <div class="brand">
+    <span class="material-icons-round brand-icon">egg_alt</span>
+    <span class="brand-name">AviFarm</span>
+  </div>
+
+  <nav class="nav">
+    @for (item of navItems; track item.path) {
+      <a class="nav-item"
+         [routerLink]="item.path"
+         routerLinkActive="active"
+         [title]="collapsed ? item.label : ''">
+        <span class="material-icons-round nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</aside>

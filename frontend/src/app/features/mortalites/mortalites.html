@@ -1,0 +1,172 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons-round">report</span> Mortalités</h1>
+      <p class="page-subtitle">Suivi des mortalités par lot</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons-round">add</span> Enregistrer
+    </button>
+  </div>
+
+  @if (error) { <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div> }
+
+  <!-- Cartes de synthèse -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <span class="stat-icon material-icons-round">groups</span>
+      <div>
+        <div class="stat-value">{{ totalInitial }}</div>
+        <div class="stat-label">Total initial</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card--alive">
+      <span class="stat-icon material-icons-round">check_circle</span>
+      <div>
+        <div class="stat-value">{{ totalAlive }}</div>
+        <div class="stat-label">Vivants actuels</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card--dead">
+      <span class="stat-icon material-icons-round">warning</span>
+      <div>
+        <div class="stat-value">{{ totalMortsSituations }}</div>
+        <div class="stat-label">Total morts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Effectifs par lot -->
+  @if (situations.length > 0) {
+    <div class="section-title">Effectifs par lot</div>
+    <div class="effectifs-grid">
+      @for (sit of situations; track sit.lot_id) {
+        <div class="effectif-card">
+          <div class="effectif-header">
+            <span class="effectif-lot">Lot {{ sit.numero }}</span>
+            <span class="badge-race">{{ sit.race }}</span>
+          </div>
+          <div class="effectif-stats">
+            <div class="effectif-stat effectif-stat--alive">
+              <span class="material-icons-round">check_circle</span>
+              <span>{{ sit.nombre_actuel }} vivants</span>
+            </div>
+            <div class="effectif-stat effectif-stat--dead">
+              <span class="material-icons-round">cancel</span>
+              <span>{{ sit.total_morts }} morts</span>
+            </div>
+          </div>
+          <div class="mortalite-bar">
+            <div class="mortalite-bar__fill" [style.width.%]="sit.taux_mortalite"></div>
+          </div>
+          <div class="mortalite-rate">{{ sit.taux_mortalite }}% de mortalité</div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Barre de filtre -->
+  <div class="filter-bar">
+    <span class="filter-label"><span class="material-icons-round">filter_list</span> Filtrer par lot :</span>
+    <select [(ngModel)]="filterLotId">
+      <option [ngValue]="null">Tous les lots</option>
+      @for (l of lots; track l.lot_id) {
+        <option [ngValue]="l.lot_id">{{ l.numero }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Tableau des mortalités -->
+  <div class="card">
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div> Chargement...</div>
+    } @else if (filteredItems.length === 0) {
+      <div class="empty-state">
+        <span class="material-icons-round">report</span>
+        <p>Aucune mortalité enregistrée</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Lot</th>
+              <th>Date</th>
+              <th>Morts</th>
+              <th>Vivants après</th>
+              <th>Cause</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (m of filteredItems; track m.mortalite_id) {
+              <tr>
+                <td class="cell-id">{{ m.mortalite_id }}</td>
+                <td class="cell-name">{{ lotNum(m.lot_id) }}</td>
+                <td>{{ m.date_mort | date:'dd/MM/yyyy' }}</td>
+                <td><span class="badge badge-danger">{{ m.nombre_morts }}</span></td>
+                <td>
+                  @let sit = situationFor(m.lot_id);
+                  @if (sit) {
+                    <span class="badge badge-success">{{ sit.nombre_actuel }}</span>
+                  } @else { — }
+                </td>
+                <td>{{ m.cause || '—' }}</td>
+                <td class="cell-actions">
+                  <button class="btn-icon btn-edit" (click)="openEdit(m)"><span class="material-icons-round">edit</span></button>
+                  <button class="btn-icon btn-delete" (click)="confirmDelete(m.mortalite_id!)"><span class="material-icons-round">delete</span></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<app-modal [title]="editId ? 'Modifier la mortalité' : 'Enregistrer une mortalité'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  <div class="form-grid">
+    @if (formError) {
+      <div class="form-error">
+        <span class="material-icons-round">error_outline</span> {{ formError }}
+      </div>
+    }
+    <div class="form-group">
+      <label>Lot *</label>
+      <select [(ngModel)]="form.lot_id">
+        <option value="" disabled>Choisir un lot</option>
+        @for (l of lots; track l.lot_id) {
+          <option [value]="l.lot_id">{{ l.numero }}</option>
+        }
+      </select>
+    </div>
+    @if (form.lot_id) {
+      @let sit = situationFor(+form.lot_id);
+      @if (sit) {
+        <div class="effectif-hint">
+          <span class="material-icons-round">info</span>
+          {{ sit.nombre_actuel }} poulet(s) vivant(s) dans ce lot.
+        </div>
+      }
+    }
+    <div class="form-group">
+      <label>Date *</label>
+      <input type="date" [(ngModel)]="form.date_mort" />
+    </div>
+    <div class="form-group">
+      <label>Nombre de Morts *</label>
+      <input type="number" [(ngModel)]="form.nombre_morts" min="1" />
+    </div>
+    <div class="form-group">
+      <label>Cause</label>
+      <input type="text" [(ngModel)]="form.cause" placeholder="Ex: Maladie, Accident..." />
+    </div>
+  </div>
+</app-modal>
+
+<app-modal title="Confirmer la suppression" [show]="showConfirm" saveBtnLabel="Supprimer" saveBtnClass="btn btn-danger" (closed)="showConfirm=false" (saved)="doDelete()">
+  <p class="confirm-text">Voulez-vous supprimer cet enregistrement ?</p>
+</app-modal>
+

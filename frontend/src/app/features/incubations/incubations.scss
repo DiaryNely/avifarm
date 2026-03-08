@@ -1,0 +1,88 @@
+.confirm-text { padding: 8px 0; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Action éclosion ── */
+.btn-eclosion {
+  color: #d97706;
+  &:hover { background: #fffbeb; }
+}
+
+/* ── Prévisualisation date éclosion dans le formulaire ── */
+.eclosion-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #166534;
+  font-size: .9rem;
+  .material-icons-round { color: #16a34a; font-size: 18px; }
+  strong { font-weight: 700; }
+  .hint { color: #6b7280; font-size: .8rem; }
+}
+
+/* ── Récap incubation dans modal éclosion ── */
+.eclosion-info {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .9rem;
+}
+.info-label { color: var(--text-secondary, #6b7280); }
+.info-val   { font-weight: 600; color: var(--text-primary, #111827); }
+.info-val.info-hint { font-weight: 400; color: #6b7280; font-style: italic; }
+
+/* ── Divers ── */
+.oeufs-restants { font-size: .78rem; color: var(--text-secondary, #9ca3af); margin-left: 4px; }
+.lot-issu-badge  { font-size: .75rem; padding: 2px 8px; }
+.text-muted      { color: var(--text-secondary, #9ca3af); }
+
+.form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: .78rem;
+  color: var(--text-secondary, #6b7280);
+  &.warn  { color: #d97706; }
+  &.error { color: #dc2626; font-weight: 600; }
+}
+
+/* ── Stock oeufs du lot ── */
+.lot-stock-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.stock-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 150px;
+  .material-icons-round { font-size: 22px; color: #16a34a; }
+  &--used .material-icons-round { color: #d97706; }
+  &--rule {
+    flex-basis: 100%;
+    min-width: unset;
+    .material-icons-round { font-size: 16px; color: #2563eb; }
+    .stock-label { font-style: italic; color: #2563eb; font-size: .78rem; }
+  }
+}
+
+.stock-label { font-size: .78rem; color: var(--text-secondary, #6b7280); }
+.stock-val   { font-size: 1.15rem; font-weight: 700; color: var(--text-primary, #111827); line-height: 1.2; }

@@ -1,0 +1,14 @@
+<header class="header">
+  <div class="header-left">
+    <button class="toggle-btn" (click)="toggleSidebar.emit()" title="Réduire le menu">
+      <span class="material-icons-round">menu</span>
+    </button>
+    <h2 class="page-name">{{ pageTitle }}</h2>
+  </div>
+  <div class="header-right">
+    <span class="header-date">{{ now | date:'EEE d MMM yyyy' : '' : 'fr' }}</span>
+    <div class="avatar">
+      <span class="material-icons-round">person</span>
+    </div>
+  </div>
+</header>

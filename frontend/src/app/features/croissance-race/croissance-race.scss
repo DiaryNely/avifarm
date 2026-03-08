@@ -1,0 +1,102 @@
+/* ── Filtres ──────────────────────────────────────────── */
+.filter-card {
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.filter-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .form-group {
+    min-width: 200px;
+    flex: 1;
+    max-width: 280px;
+  }
+}
+
+.race-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding-bottom: 2px;
+}
+
+.info-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--accent-light);
+  color: #065F46;
+  font-size: .75rem;
+  font-weight: 600;
+
+  .material-icons-round { font-size: 14px; }
+}
+
+/* ── Table spécifique ──────────────────────────────────── */
+.col-highlight {
+  background: linear-gradient(to bottom, rgba(16,185,129,.06), rgba(16,185,129,.04));
+}
+
+.cell-bold { font-weight: 700; color: #065F46; }
+
+.row-semaine0 td { background: #F8FAFC; }
+
+.week-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--info-light);
+  color: #1E40AF;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.val-initial {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.val-gain {
+  font-weight: 600;
+  color: #059669;
+}
+
+/* ── Pied de tableau ───────────────────────────────────── */
+.tfoot-summary td {
+  padding: 10px 16px;
+  background: #F8FAFC;
+  border-top: 2px solid var(--border);
+  font-size: .8125rem;
+}
+
+.tfoot-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* ── Formulaire ────────────────────────────────────────── */
+.field-hint {
+  font-size: .75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.confirm-text {
+  padding: 8px 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

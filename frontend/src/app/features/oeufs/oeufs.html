@@ -1,0 +1,78 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons-round">egg</span> Oeufs</h1>
+      <p class="page-subtitle">Enregistrement quotidien de la collecte des oeufs</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons-round">add</span> Enregistrer
+    </button>
+  </div>
+
+  @if (error) { <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div> }
+
+  <div class="card">
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div> Chargement...</div>
+    } @else if (items.length === 0) {
+      <div class="empty-state"><span class="material-icons-round">egg</span><p>Aucun enregistrement d'oeufs</p></div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr><th>#</th><th>Lot</th><th>Date Collecte</th><th>Collecte</th><th>Incubés</th><th>Restants</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            @for (o of items; track o.oeuf_id) {
+              <tr>
+                <td class="cell-id">{{ o.oeuf_id }}</td>
+                <td class="cell-name">{{ lotNum(o.lot_id) }}</td>
+                <td>{{ o.date_collecte | date:'dd/MM/yyyy' }}</td>
+                <td><span class="badge badge-success">{{ o.nombre_oeufs + totalIncubes(o.oeuf_id!) }}</span></td>
+                <td>
+                  @let inc = totalIncubes(o.oeuf_id!);
+                  @if (inc > 0) {
+                    <span class="badge badge-warning">{{ inc }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td><span class="badge" [class]="o.nombre_oeufs > 0 ? 'badge-info' : 'badge-neutral'">{{ o.nombre_oeufs }}</span></td>
+                <td class="cell-actions">
+                  <button class="btn-icon btn-edit" (click)="openEdit(o)"><span class="material-icons-round">edit</span></button>
+                  <button class="btn-icon btn-delete" (click)="confirmDelete(o.oeuf_id!)"><span class="material-icons-round">delete</span></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<app-modal [title]="editId ? 'Modifier la collecte' : 'Nouvelle collecte d\'oeufs'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Lot *</label>
+      <select [(ngModel)]="form.lot_id">
+        <option value="" disabled>Choisir un lot</option>
+        @for (l of lots; track l.lot_id) {
+          <option [value]="l.lot_id">{{ l.numero }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Date de Collecte *</label>
+      <input type="date" [(ngModel)]="form.date_collecte" />
+    </div>
+    <div class="form-group form-full">
+      <label>Nombre d'Oeufs *</label>
+      <input type="number" [(ngModel)]="form.nombre_oeufs" min="1" />
+    </div>
+  </div>
+</app-modal>
+
+<app-modal title="Confirmer la suppression" [show]="showConfirm" saveBtnLabel="Supprimer" saveBtnClass="btn btn-danger" (closed)="showConfirm=false" (saved)="doDelete()">
+  <p class="confirm-text">Voulez-vous supprimer cet enregistrement ?</p>
+</app-modal>

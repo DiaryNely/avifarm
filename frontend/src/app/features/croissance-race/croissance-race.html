@@ -1,0 +1,203 @@
+<div class="page">
+
+  <!-- ── En-tête ─────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons-round">show_chart</span> Croissance des Races
+      </h1>
+      <p class="page-subtitle">Règles de croissance hebdomadaire et tableau cumulatif par race</p>
+    </div>
+    @if (selectedRaceId) {
+      <button class="btn btn-primary" (click)="openCreate()">
+        <span class="material-icons-round">add</span> Ajouter une semaine
+      </button>
+    }
+  </div>
+
+  @if (error) {
+    <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div>
+  }
+
+  <!-- ── Filtres ─────────────────────────────────────────── -->
+  <div class="card filter-card">
+    <div class="filter-row">
+      <div class="form-group">
+        <label>Race *</label>
+        <select [(ngModel)]="selectedRaceId" (ngModelChange)="onRaceChange()">
+          <option [ngValue]="null" disabled>— Choisir une race —</option>
+          @for (r of races; track r.race_id) {
+            <option [ngValue]="r.race_id">{{ r.nom }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Afficher jusqu'à la semaine</label>
+        <input
+          type="number"
+          [(ngModel)]="filterWeek"
+          (ngModelChange)="applyFilter()"
+          placeholder="Toutes les semaines"
+          min="0"
+          [disabled]="!selectedRaceId"
+        />
+      </div>
+
+      @if (selectedRace) {
+        <div class="race-info">
+          <span class="info-chip"><span class="material-icons-round">egg</span>Ponte sem. {{ selectedRace.semaine_ponte }}</span>
+          <span class="info-chip"><span class="material-icons-round">science</span>Incub. {{ selectedRace.duree_incubation }} j</span>
+          <span class="info-chip"><span class="material-icons-round">sell</span>{{ selectedRace.prix_vente_g | number:'1.2-2' }} Ar/g</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ── Tableau de croissance ──────────────────────────── -->
+  @if (selectedRaceId) {
+    <div class="card">
+      @if (loading) {
+        <div class="loading-state"><div class="spinner"></div> Calcul en cours...</div>
+      } @else if (filteredTableau.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons-round">show_chart</span>
+          <p>Aucune règle de croissance pour cette race.</p>
+          <button class="btn btn-primary" style="margin-top:16px" (click)="openCreate()">
+            <span class="material-icons-round">add</span> Ajouter la semaine 0
+          </button>
+        </div>
+      } @else {
+        <p class="prix-nourrit-info">
+          <span class="material-icons-round">info</span>
+          Prix de la nourriture : <strong>{{ filteredTableau[0]?.prix_nourrit_g | number:'1.2-2' }} Ar/g</strong>
+        </p>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Semaine</th>
+                <th>Poids Initial / Gain (g)</th>
+                <th class="col-highlight">Poids Actuel (g)</th>
+                <th>Nourrit. / semaine (g)</th>
+                <th>Coût nourrit. / sem. (Ar)</th>
+                <th class="col-highlight">Nourrit. Cumulée (g)</th>
+                <th class="col-highlight">Coût cumulé (Ar)</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredTableau; track row.croissance_id) {
+                <tr [class.row-semaine0]="row.semaine === 0">
+                  <td>
+                    @if (row.semaine === 0) {
+                      <span class="badge badge-info">Sem. 0 (départ)</span>
+                    } @else {
+                      <span class="week-badge">S{{ row.semaine }}</span>
+                    }
+                  </td>
+                  <td>
+                    @if (row.semaine === 0) {
+                      <span class="val-initial">{{ row.poids_initial | number:'1.0-2' }} g</span>
+                    } @else {
+                      <span class="val-gain">+{{ row.gain_poids | number:'1.0-2' }} g</span>
+                    }
+                  </td>
+                  <td class="col-highlight cell-bold">{{ row.poids_actuel | number:'1.0-2' }} g</td>
+                  <td>{{ row.nourrit_semaine | number:'1.0-2' }} g</td>
+                  <td>{{ row.cout_nourrit_semaine | number:'1.0-0' }} Ar</td>
+                  <td class="col-highlight">{{ row.nourrit_cumul | number:'1.0-2' }} g</td>
+                  <td class="col-highlight">{{ row.cout_nourrit_cumul | number:'1.0-0' }} Ar</td>
+                  <td class="cell-actions">
+                    <button class="btn-icon btn-edit"   (click)="openEdit(row)"             title="Modifier"><span class="material-icons-round">edit</span></button>
+                    <button class="btn-icon btn-delete" (click)="confirmDelete(row.croissance_id!)" title="Supprimer"><span class="material-icons-round">delete</span></button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr class="tfoot-summary">
+                <td colspan="2" class="tfoot-label">Total de la période affichée</td>
+                <td class="col-highlight cell-bold">
+                  {{ filteredTableau[filteredTableau.length - 1]?.poids_actuel | number:'1.0-2' }} g
+                </td>
+                <td></td>
+                <td></td>
+                <td class="col-highlight">
+                  {{ filteredTableau[filteredTableau.length - 1]?.nourrit_cumul | number:'1.0-2' }} g
+                </td>
+                <td class="col-highlight">
+                  {{ filteredTableau[filteredTableau.length - 1]?.cout_nourrit_cumul | number:'1.0-0' }} Ar
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="card">
+      <div class="empty-state">
+        <span class="material-icons-round">touch_app</span>
+        <p>Sélectionnez une race pour afficher son tableau de croissance.</p>
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- ── Modal Ajout / Modification ─────────────────────── -->
+<app-modal
+  [title]="editId ? 'Modifier la règle de croissance' : 'Ajouter une règle de croissance'"
+  [show]="showModal"
+  [saving]="saving"
+  (closed)="showModal = false"
+  (saved)="save()"
+>
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Race *</label>
+      <select [(ngModel)]="form.race_id" [disabled]="!!editId">
+        <option [ngValue]="undefined" disabled>— Choisir —</option>
+        @for (r of races; track r.race_id) {
+          <option [ngValue]="r.race_id">{{ r.nom }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Numéro de semaine *</label>
+      <input type="number" [(ngModel)]="form.semaine" min="0" placeholder="0, 1, 2 …" [disabled]="!!editId" />
+    </div>
+
+    @if (isSemaine0) {
+      <div class="form-group form-full">
+        <label>Poids initial (g) * <span class="field-hint">— semaine 0 uniquement</span></label>
+        <input type="number" [(ngModel)]="form.poids_initial" step="0.01" min="0" placeholder="Ex : 150" />
+      </div>
+    } @else {
+      <div class="form-group form-full">
+        <label>Gain de poids (g) * <span class="field-hint">— gain par rapport à la semaine précédente</span></label>
+        <input type="number" [(ngModel)]="form.gain_poids" step="0.01" min="0" placeholder="Ex : 30" />
+      </div>
+    }
+
+    <div class="form-group form-full">
+      <label>Nourriture consommée / poulet / semaine (g) *</label>
+      <input type="number" [(ngModel)]="form.nourrit_semaine" step="0.01" min="0" placeholder="Ex : 60" />
+    </div>
+  </div>
+</app-modal>
+
+<!-- ── Modal Confirmation suppression ─────────────────── -->
+<app-modal
+  title="Confirmer la suppression"
+  [show]="showConfirm"
+  saveBtnLabel="Supprimer"
+  saveBtnClass="btn btn-danger"
+  (closed)="showConfirm = false"
+  (saved)="doDelete()"
+>
+  <p class="confirm-text">Confirmer la suppression de cette règle de croissance ? Action irréversible.</p>
+</app-modal>

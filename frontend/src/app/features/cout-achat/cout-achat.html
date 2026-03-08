@@ -1,0 +1,74 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons-round">receipt_long</span> Coûts d'Achat</h1>
+      <p class="page-subtitle">Coûts d'achat des poussins par lot</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons-round">add</span> Ajouter
+    </button>
+  </div>
+
+  @if (error) { <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div> }
+
+  <div class="card">
+    @if (loading) {
+      <div class="loading-state"><div class="spinner"></div> Chargement...</div>
+    } @else if (items.length === 0) {
+      <div class="empty-state"><span class="material-icons-round">receipt_long</span><p>Aucun coût d'achat enregistré</p></div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr><th>#</th><th>Lot</th><th>Date Achat</th><th>Coût Total (Ar)</th><th>Notes</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            @for (c of items; track c.achat_id) {
+              <tr>
+                <td class="cell-id">{{ c.achat_id }}</td>
+                <td class="cell-name">{{ lotNum(c.lot_id) }}</td>
+                <td>{{ c.date_achat | date:'dd/MM/yyyy' }}</td>
+                <td class="cell-name">{{ c.cout_total | number:'1.0-0' }}</td>
+                <td>{{ c.notes || '—' }}</td>
+                <td class="cell-actions">
+                  <button class="btn-icon btn-edit" (click)="openEdit(c)"><span class="material-icons-round">edit</span></button>
+                  <button class="btn-icon btn-delete" (click)="confirmDelete(c.achat_id!)"><span class="material-icons-round">delete</span></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<app-modal [title]="editId ? 'Modifier le coût' : 'Nouveau coût d\'achat'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Lot *</label>
+      <select [(ngModel)]="form.lot_id">
+        <option value="" disabled>Choisir un lot</option>
+        @for (l of lots; track l.lot_id) {
+          <option [value]="l.lot_id">{{ l.numero }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Date d'Achat *</label>
+      <input type="date" [(ngModel)]="form.date_achat" />
+    </div>
+    <div class="form-group form-full">
+      <label>Coût Total (Ar) *</label>
+      <input type="number" [(ngModel)]="form.cout_total" step="0.01" min="0" />
+    </div>
+    <div class="form-group form-full">
+      <label>Notes</label>
+      <textarea [(ngModel)]="form.notes" placeholder="Observations, fournisseur..."></textarea>
+    </div>
+  </div>
+</app-modal>
+
+<app-modal title="Confirmer la suppression" [show]="showConfirm" saveBtnLabel="Supprimer" saveBtnClass="btn btn-danger" (closed)="showConfirm=false" (saved)="doDelete()">
+  <p class="confirm-text">Voulez-vous supprimer ce coût d'achat ?</p>
+</app-modal>

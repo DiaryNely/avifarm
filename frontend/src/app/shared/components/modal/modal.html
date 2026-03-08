@@ -1,0 +1,22 @@
+@if (show) {
+  <div class="modal-overlay" (click)="onOverlay($event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>{{ title }}</h3>
+        <button class="modal-close" (click)="closed.emit()">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ng-content />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" (click)="closed.emit()">Annuler</button>
+        <button [class]="saveBtnClass" type="button" (click)="saved.emit()" [disabled]="saving">
+          @if (saving) { <span class="spinner-sm"></span> }
+          {{ saveBtnLabel }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

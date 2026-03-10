@@ -27,6 +27,7 @@ export class LotsComponent implements OnInit {
   editId: number | null = null;
   form: Partial<Lot> = {};
   deleteId: number | null = null; showConfirm = false;
+  filterDate = '';
 
   // Panneau croissance
   showCroissance = false;
@@ -42,6 +43,11 @@ export class LotsComponent implements OnInit {
       next: ({ lots, races, situations }) => { this.lots = lots; this.races = races; this.situations = situations; this.loading = false; },
       error: () => { this.error = 'Impossible de charger les lots.'; this.loading = false; },
     });
+  }
+
+  loadSituations() {
+    const obs = this.filterDate ? this.svc.getSituationAtDate(this.filterDate) : this.svc.getSituation();
+    obs.subscribe({ next: s => this.situations = s, error: () => {} });
   }
 
   raceName(id: number) { return this.races.find(r => r.race_id === id)?.nom ?? id; }

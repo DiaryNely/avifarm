@@ -247,3 +247,74 @@
     .material-icons-round { color: #10b981; }
   }
 }
+
+/* ── Situation détaillée ── */
+.situation-card { margin-top: 24px; }
+
+.situation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px 12px;
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    .material-icons-round { font-size: 18px; color: #2563eb; }
+  }
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+
+  input[type="date"] {
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: .82rem;
+    color: var(--text-primary, #111827);
+    background: var(--card-bg, #fff);
+    &:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+  }
+}
+
+.btn-sm {
+  font-size: .75rem;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  .material-icons-round { font-size: 14px; }
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  &:hover { background: var(--hover-bg, #f3f4f6); color: var(--text-primary, #111827); }
+}
+
+.table-situation {
+  font-size: .78rem;
+  th, td { padding: 8px 10px; white-space: nowrap; }
+  th { font-size: .7rem; }
+}
+
+.day-hint {
+  color: var(--text-secondary, #6b7280);
+  font-size: .7rem;
+  margin-left: 2px;
+}
+
+.cell-positive { color: #059669; font-weight: 600; }
+.cell-negative { color: #dc2626; font-weight: 600; }

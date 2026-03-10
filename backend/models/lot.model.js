@@ -3,8 +3,9 @@ const sim = require('../simulation');
 
 // ── Helpers calcul métier ──────────────────────────────────
 
-function daysBetween(dateEntree) {
-  const ms = sim.getDate().getTime() - new Date(dateEntree).getTime();
+function daysBetween(dateEntree, refDate) {
+  const ref = refDate ? new Date(refDate) : sim.getDate();
+  const ms = ref.getTime() - new Date(dateEntree).getTime();
   return Math.max(0, Math.floor(ms / (24 * 60 * 60 * 1000)));
 }
 
@@ -59,11 +60,11 @@ function computeNourritureTotal(croissance, jours, nombreActuel) {
   return total * nombreActuel;
 }
 
-function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, coutAchatMap, vendusMap, revenuVentePouletsMap) {
+function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap, refDate) {
   const totalMorts    = mortsMap.get(lot.lot_id) || 0;
   const totalVendus   = vendusMap.get(lot.lot_id) || 0;
   const nombreActuel  = lot.nombre_initial - totalMorts - totalVendus;
-  const jours         = daysBetween(lot.date_entree);
+  const jours         = daysBetween(lot.date_entree, refDate);
   const semaine       = Math.floor(jours / 7);
   const croissance    = croissanceMap.get(lot.race_id) || [];
 
@@ -73,9 +74,11 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, c
   const nourritTotalG = computeNourritureTotal(croissance, jours, nombreActuel);
   const coutNourrit   = nourritTotalG * parseFloat(lot.prix_nourrit_g);
   const totalOeufs         = oeufsMap.get(lot.lot_id) || 0;
+  const nbOeufsVendus      = nbOeufsVendusMap.get(lot.lot_id) || 0;
   const revenuOeufs        = parseFloat(venteOeufsMap.get(lot.lot_id) || 0);
   const coutAchat          = parseFloat(coutAchatMap.get(lot.lot_id) || 0);
   const revenuVentePoulets = parseFloat(revenuVentePouletsMap.get(lot.lot_id) || 0);
+  const prixVenteUnitaire  = poidsMoyenG * parseFloat(lot.prix_vente_g);
 
   return {
     lot_id:           lot.lot_id,
@@ -94,9 +97,11 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, c
     poids_moyen_g:    poidsMoyenG,
     poids_total_g:    poidsTotalG,
     valeur_poulets_ar: valeurPoulets,
+    prix_vente_unitaire_ar: prixVenteUnitaire,
     nourrit_total_g:  nourritTotalG,
     cout_nourrit_ar:  coutNourrit,
     total_oeufs:      totalOeufs,
+    nb_oeufs_vendus:         nbOeufsVendus,
     revenu_oeufs_ar:         revenuOeufs,
     cout_achat_ar:           coutAchat,
     revenu_vente_poulets_ar: revenuVentePoulets,
@@ -129,7 +134,7 @@ async function fetchRawSituationData(pool, lotId) {
     pool.request().query(`SELECT race_id, semaine, poids_initial, gain_poids, nourrit_semaine FROM CroissanceRace ORDER BY race_id, semaine`),
     makeReq().query(`SELECT e.lot_id, SUM(e.nombre_oeufs) AS total_oeufs FROM EnregistrementOeufs e ${oeufsFilter} GROUP BY e.lot_id`),
     makeReq().query(`
-      SELECT e.lot_id, SUM(v.nombre_vendus * v.prix_unitaire) AS revenu_oeufs
+      SELECT e.lot_id, SUM(v.nombre_vendus) AS nb_oeufs_vendus, SUM(v.nombre_vendus * v.prix_unitaire) AS revenu_oeufs
       FROM VenteOeufs v JOIN EnregistrementOeufs e ON v.oeuf_id = e.oeuf_id
       ${oeufsFilter} GROUP BY e.lot_id
     `),
@@ -139,7 +144,8 @@ async function fetchRawSituationData(pool, lotId) {
 
   const mortsMap       = new Map(morts.recordset.map(m => [m.lot_id, m.total_morts]));
   const oeufsMap       = new Map(oeufs.recordset.map(o => [o.lot_id, o.total_oeufs]));
-  const venteOeufsMap  = new Map(venteOeufs.recordset.map(v => [v.lot_id, v.revenu_oeufs]));
+  const venteOeufsMap     = new Map(venteOeufs.recordset.map(v => [v.lot_id, v.revenu_oeufs]));
+  const nbOeufsVendusMap  = new Map(venteOeufs.recordset.map(v => [v.lot_id, v.nb_oeufs_vendus]));
   const coutAchatMap          = new Map(coutAchat.recordset.map(c => [c.lot_id, parseFloat(c.cout_total)]));
   const vendusMap             = new Map(ventePoulets.recordset.map(v => [v.lot_id, v.total_vendus]));
   const revenuVentePouletsMap = new Map(ventePoulets.recordset.map(v => [v.lot_id, parseFloat(v.revenu_vente || 0)]));
@@ -150,7 +156,7 @@ async function fetchRawSituationData(pool, lotId) {
     croissanceMap.get(row.race_id).push(row);
   }
 
-  return { lots: lots.recordset, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, coutAchatMap, vendusMap, revenuVentePouletsMap };
+  return { lots: lots.recordset, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap };
 }
 
 // ── Modèle ─────────────────────────────────────────────────
@@ -172,19 +178,19 @@ const Lot = {
   },
 
   // Situation complète — calculs métier côté backend
-  async getSituation() {
+  async getSituation(refDate) {
     const pool = await getPool();
-    const { lots, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, coutAchatMap, vendusMap, revenuVentePouletsMap } =
+    const { lots, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap } =
       await fetchRawSituationData(pool);
-    return lots.map(lot => buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, coutAchatMap, vendusMap, revenuVentePouletsMap));
+    return lots.map(lot => buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap, refDate));
   },
 
-  async getSituationById(id) {
+  async getSituationById(id, refDate) {
     const pool = await getPool();
-    const { lots, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, coutAchatMap, vendusMap, revenuVentePouletsMap } =
+    const { lots, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap } =
       await fetchRawSituationData(pool, id);
     if (lots.length === 0) return null;
-    return buildSituation(lots[0], mortsMap, croissanceMap, oeufsMap, venteOeufsMap, coutAchatMap, vendusMap, revenuVentePouletsMap);
+    return buildSituation(lots[0], mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap, refDate);
   },
 
   async create(data) {

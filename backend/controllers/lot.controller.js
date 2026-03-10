@@ -18,14 +18,16 @@ const lotController = {
 
   async getSituation(req, res, next) {
     try {
-      const data = await Lot.getSituation();
+      const refDate = req.query.date || null;
+      const data = await Lot.getSituation(refDate);
       res.json(data);
     } catch (err) { next(err); }
   },
 
   async getSituationById(req, res, next) {
     try {
-      const data = await Lot.getSituationById(parseInt(req.params.id));
+      const refDate = req.query.date || null;
+      const data = await Lot.getSituationById(parseInt(req.params.id), refDate);
       if (!data) return res.status(404).json({ error: 'Lot non trouvé' });
       res.json(data);
     } catch (err) { next(err); }

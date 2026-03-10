@@ -56,9 +56,11 @@ export interface LotSituation {
   nourrit_total_g: number;
   cout_nourrit_ar: number;
   total_oeufs: number;
+  nb_oeufs_vendus: number;
   revenu_oeufs_ar: number;
   cout_achat_ar: number;
   benefice_ar: number;
+  prix_vente_unitaire_ar: number;
 }
 
 export interface Mortalite {

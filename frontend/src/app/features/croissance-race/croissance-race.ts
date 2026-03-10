@@ -30,6 +30,7 @@ export class CroissanceRaceComponent implements OnInit {
   editId: number | null = null;
   form: Partial<CroissanceRace> = {};
   saving     = false;
+  saveError  = '';
 
   showConfirm = false;
   deleteId: number | null = null;
@@ -79,12 +80,14 @@ export class CroissanceRaceComponent implements OnInit {
 
   openCreate() {
     this.editId = null;
+    this.saveError = '';
     this.form   = { race_id: this.selectedRaceId ?? undefined, semaine: undefined };
     this.showModal = true;
   }
 
   openEdit(r: CroissanceRaceTableau) {
     this.editId = r.croissance_id!;
+    this.saveError = '';
     this.form   = {
       race_id:         r.race_id,
       semaine:         r.semaine,
@@ -96,6 +99,12 @@ export class CroissanceRaceComponent implements OnInit {
   }
 
   save() {
+    this.saveError = '';
+    if (!this.form.race_id) { this.saveError = 'Veuillez sélectionner une race.'; return; }
+    if (this.form.semaine === undefined || this.form.semaine === null || this.form.semaine < 0) { this.saveError = 'Le numéro de semaine doit être ≥ 0.'; return; }
+    if (this.isSemaine0 && !(this.form.poids_initial! > 0)) { this.saveError = 'Le poids initial doit être > 0.'; return; }
+    if (!this.isSemaine0 && !(this.form.gain_poids! > 0)) { this.saveError = 'Le gain de poids doit être > 0.'; return; }
+    if (!(this.form.nourrit_semaine! >= 0)) { this.saveError = 'La nourriture par semaine est obligatoire.'; return; }
     this.saving = true;
     // Semaine 0 → gain_poids null ; sinon → poids_initial null
     const payload: CroissanceRace = {
@@ -110,7 +119,7 @@ export class CroissanceRaceComponent implements OnInit {
       : this.svc.create(payload);
     obs.subscribe({
       next: () => { this.showModal = false; this.saving = false; this.loadTableau(); },
-      error: () => { this.saving = false; },
+      error: (err: any) => { this.saving = false; this.saveError = err?.error?.error ?? 'Erreur lors de l\'enregistrement.'; },
     });
   }
 

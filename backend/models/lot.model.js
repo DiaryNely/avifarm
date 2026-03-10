@@ -3,25 +3,59 @@ const sim = require('../simulation');
 
 // ── Helpers calcul métier ──────────────────────────────────
 
-function weeksBetween(dateEntree) {
+function daysBetween(dateEntree) {
   const ms = sim.getDate().getTime() - new Date(dateEntree).getTime();
-  return Math.max(0, Math.floor(ms / (7 * 24 * 60 * 60 * 1000)));
+  return Math.max(0, Math.floor(ms / (24 * 60 * 60 * 1000)));
 }
 
-function computePoidsMoyen(croissance, semaine) {
+/**
+ * Poids moyen interpolé au jour près.
+ * On prend le poids complet des semaines révolues, puis on ajoute
+ * (gain de la semaine en cours) × (jours écoulés dans cette semaine) / 7.
+ */
+function computePoidsMoyen(croissance, jours) {
+  const semaineComplete = Math.floor(jours / 7);
+  const joursRestants   = jours % 7;           // 0-6
+
   let poids = 0;
+  let gainSemaineSuivante = 0;
+
   for (const c of croissance) {
-    if (c.semaine === 0) poids += parseFloat(c.poids_initial) || 0;
-    else if (c.semaine <= semaine) poids += parseFloat(c.gain_poids) || 0;
+    if (c.semaine === 0) {
+      poids += parseFloat(c.poids_initial) || 0;
+    } else if (c.semaine <= semaineComplete) {
+      poids += parseFloat(c.gain_poids) || 0;
+    } else if (c.semaine === semaineComplete + 1) {
+      gainSemaineSuivante = parseFloat(c.gain_poids) || 0;
+    }
   }
-  return poids;
+
+  // Interpolation linéaire du gain de la semaine en cours
+  poids += gainSemaineSuivante * (joursRestants / 7);
+
+  return Math.round(poids * 100) / 100;
 }
 
-function computeNourritureTotal(croissance, semaine, nombreActuel) {
+/**
+ * Nourriture totale interpolée au jour.
+ */
+function computeNourritureTotal(croissance, jours, nombreActuel) {
+  const semaineComplete = Math.floor(jours / 7);
+  const joursRestants   = jours % 7;
+
   let total = 0;
+  let nourritSemaineSuivante = 0;
+
   for (const c of croissance) {
-    if (c.semaine <= semaine) total += parseFloat(c.nourrit_semaine) || 0;
+    if (c.semaine <= semaineComplete) {
+      total += parseFloat(c.nourrit_semaine) || 0;
+    } else if (c.semaine === semaineComplete + 1) {
+      nourritSemaineSuivante = parseFloat(c.nourrit_semaine) || 0;
+    }
   }
+
+  total += nourritSemaineSuivante * (joursRestants / 7);
+
   return total * nombreActuel;
 }
 
@@ -29,13 +63,14 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, c
   const totalMorts    = mortsMap.get(lot.lot_id) || 0;
   const totalVendus   = vendusMap.get(lot.lot_id) || 0;
   const nombreActuel  = lot.nombre_initial - totalMorts - totalVendus;
-  const semaine       = weeksBetween(lot.date_entree);
+  const jours         = daysBetween(lot.date_entree);
+  const semaine       = Math.floor(jours / 7);
   const croissance    = croissanceMap.get(lot.race_id) || [];
 
-  const poidsMoyenG   = computePoidsMoyen(croissance, semaine);
+  const poidsMoyenG   = computePoidsMoyen(croissance, jours);
   const poidsTotalG   = poidsMoyenG * nombreActuel;
   const valeurPoulets = poidsTotalG * parseFloat(lot.prix_vente_g);
-  const nourritTotalG = computeNourritureTotal(croissance, semaine, nombreActuel);
+  const nourritTotalG = computeNourritureTotal(croissance, jours, nombreActuel);
   const coutNourrit   = nourritTotalG * parseFloat(lot.prix_nourrit_g);
   const totalOeufs         = oeufsMap.get(lot.lot_id) || 0;
   const revenuOeufs        = parseFloat(venteOeufsMap.get(lot.lot_id) || 0);
@@ -48,6 +83,7 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, c
     race:             lot.race_nom,
     date_entree:      lot.date_entree,
     actif:            lot.actif,
+    jour_actuel:      jours,
     semaine_actuelle: semaine,
     nombre_actuel:    nombreActuel,
     total_morts:      totalMorts,

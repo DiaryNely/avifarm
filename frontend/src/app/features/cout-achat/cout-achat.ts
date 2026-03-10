@@ -35,13 +35,22 @@ export class CoutAchatComponent implements OnInit {
 
   lotNum(id: number) { return this.lots.find(l => l.lot_id === id)?.numero ?? id; }
 
-  openCreate() { this.editId = null; this.form = {}; this.showModal = true; }
-  openEdit(c: CoutAchat) { this.editId = c.achat_id!; this.form = { ...c }; this.showModal = true; }
+  saveError = '';
+
+  openCreate() { this.editId = null; this.form = {}; this.saveError = ''; this.showModal = true; }
+  openEdit(c: CoutAchat) { this.editId = c.achat_id!; this.form = { ...c }; this.saveError = ''; this.showModal = true; }
 
   save() {
+    this.saveError = '';
+    if (!this.form.lot_id) { this.saveError = 'Veuillez sélectionner un lot.'; return; }
+    if (!this.form.date_achat) { this.saveError = 'La date d\'achat est obligatoire.'; return; }
+    if (!(this.form.cout_total! > 0)) { this.saveError = 'Le coût total doit être > 0.'; return; }
     this.saving = true;
     const obs = this.editId ? this.svc.update(this.editId, this.form as CoutAchat) : this.svc.create(this.form as CoutAchat);
-    obs.subscribe({ next: () => { this.showModal = false; this.saving = false; this.load(); }, error: () => { this.saving = false; } });
+    obs.subscribe({
+      next: () => { this.showModal = false; this.saving = false; this.load(); },
+      error: (err) => { this.saving = false; this.saveError = err?.error?.error ?? 'Erreur lors de l\'enregistrement.'; },
+    });
   }
 
   confirmDelete(id: number) { this.deleteId = id; this.showConfirm = true; }

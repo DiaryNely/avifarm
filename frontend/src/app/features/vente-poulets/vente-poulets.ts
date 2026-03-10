@@ -67,7 +67,13 @@ export class VentePouletsComponent implements OnInit {
   openEdit(v: VentePoulets) { this.editId = v.vente_id!; this.form = { ...v }; this.saveError = ''; this.showModal = true; }
 
   save() {
-    this.saving = true; this.saveError = '';
+    this.saveError = '';
+    if (!this.form.lot_id) { this.saveError = 'Veuillez sélectionner un lot.'; return; }
+    if (!this.form.date_vente) { this.saveError = 'La date de vente est obligatoire.'; return; }
+    if (!(this.form.nombre_vendus! >= 1)) { this.saveError = 'Le nombre vendu doit être ≥ 1.'; return; }
+    if (!(this.form.poids_moyen_g! > 0)) { this.saveError = 'Le poids moyen doit être > 0.'; return; }
+    if (!(this.form.prix_vente_g! > 0)) { this.saveError = 'Le prix de vente doit être > 0.'; return; }
+    this.saving = true;
     const obs = this.editId ? this.svc.update(this.editId, this.form as VentePoulets) : this.svc.create(this.form as VentePoulets);
     obs.subscribe({
       next: () => { this.showModal = false; this.saving = false; this.load(); },

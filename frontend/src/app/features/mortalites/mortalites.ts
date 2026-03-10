@@ -100,6 +100,9 @@ export class MortalitesComponent implements OnInit {
 
   save() {
     this.formError = '';
+    if (!this.form.lot_id) { this.formError = 'Veuillez sélectionner un lot.'; return; }
+    if (!this.form.date_mort) { this.formError = 'La date est obligatoire.'; return; }
+    if (!(this.form.nombre_morts! >= 1)) { this.formError = 'Le nombre de morts doit être ≥ 1.'; return; }
     this.saving = true;
     const obs = this.editId
       ? this.svc.update(this.editId, this.form as Mortalite)

@@ -87,7 +87,7 @@
             </span>
             <span class="tag tag--purple">
               <span class="material-icons-round">timer</span>
-              Semaine {{ selectedSit.semaine_actuelle }}
+              Jour {{ selectedSit.jour_actuel }} (S{{ selectedSit.semaine_actuelle }})
             </span>
             <span class="tag" [ngClass]="selectedSit.actif ? 'tag--green' : 'tag--neutral'">
               <span class="material-icons-round">{{ selectedSit.actif ? 'check_circle' : 'cancel' }}</span>
@@ -260,7 +260,7 @@
                   </td>
                   <td class="cell-race">{{ s.race }}</td>
                   <td class="txt-center">
-                    <span class="week-pill">S{{ s.semaine_actuelle }}</span>
+                    <span class="week-pill">J{{ s.jour_actuel }}</span>
                   </td>
                   <td class="txt-center">
                     <span class="badge badge-success">{{ s.nombre_actuel | number }}</span>

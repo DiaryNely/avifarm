@@ -67,6 +67,9 @@
 </div>
 
 <app-modal [title]="editId ? 'Modifier le lot' : 'Nouveau lot'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  @if (saveError) {
+    <div class="error-msg"><span class="material-icons-round">error</span>{{ saveError }}</div>
+  }
   <div class="form-grid">
     <div class="form-group">
       <label>Numéro *</label>
@@ -187,7 +190,7 @@
                 <div>
                   <div class="cp-card__label">Poids moyen</div>
                   <div class="cp-card__value">{{ sit.poids_moyen_g | number:'1.0-0' }}&nbsp;g</div>
-                  <div class="cp-card__sub">par poulet — semaine {{ sit.semaine_actuelle }}</div>
+                  <div class="cp-card__sub">par poulet — jour {{ sit.jour_actuel }} (semaine {{ sit.semaine_actuelle }})</div>
                 </div>
               </div>
               <div class="cp-card cp-card--total">

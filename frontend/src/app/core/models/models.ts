@@ -43,6 +43,7 @@ export interface LotSituation {
   race: string;
   date_entree: string;
   actif: number;
+  jour_actuel: number;
   semaine_actuelle: number;
   nombre_actuel: number;
   total_morts: number;

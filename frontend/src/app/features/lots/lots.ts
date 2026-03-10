@@ -58,13 +58,23 @@ export class LotsComponent implements OnInit {
     });
   }
 
-  openCreate() { this.editId = null; this.form = { actif: 1 }; this.showModal = true; }
-  openEdit(l: Lot) { this.editId = l.lot_id!; this.form = { ...l }; this.showModal = true; }
+  saveError = '';
+
+  openCreate() { this.editId = null; this.form = { actif: 1 }; this.saveError = ''; this.showModal = true; }
+  openEdit(l: Lot) { this.editId = l.lot_id!; this.form = { ...l }; this.saveError = ''; this.showModal = true; }
 
   save() {
+    this.saveError = '';
+    if (!this.form.numero?.trim()) { this.saveError = 'Le numéro de lot est obligatoire.'; return; }
+    if (!this.form.race_id) { this.saveError = 'Veuillez sélectionner une race.'; return; }
+    if (!(this.form.nombre_initial! >= 1)) { this.saveError = 'Le nombre initial doit être ≥ 1.'; return; }
+    if (!this.form.date_entree) { this.saveError = 'La date d\'entrée est obligatoire.'; return; }
     this.saving = true;
     const obs = this.editId ? this.svc.update(this.editId, this.form as Lot) : this.svc.create(this.form as Lot);
-    obs.subscribe({ next: () => { this.showModal = false; this.saving = false; this.load(); }, error: () => { this.saving = false; } });
+    obs.subscribe({
+      next: () => { this.showModal = false; this.saving = false; this.load(); },
+      error: (err) => { this.saving = false; this.saveError = err?.error?.error ?? 'Erreur lors de l\'enregistrement.'; },
+    });
   }
 
   confirmDelete(id: number) { this.deleteId = id; this.showConfirm = true; }

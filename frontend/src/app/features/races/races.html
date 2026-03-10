@@ -49,6 +49,9 @@
 </div>
 
 <app-modal [title]="editId ? 'Modifier la race' : 'Nouvelle race'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">
+  @if (saveError) {
+    <div class="error-msg"><span class="material-icons-round">error</span>{{ saveError }}</div>
+  }
   <div class="form-grid">
     <div class="form-group form-full">
       <label>Nom *</label>

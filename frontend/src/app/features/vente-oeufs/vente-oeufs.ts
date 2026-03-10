@@ -38,13 +38,23 @@ export class VenteOeufsComponent implements OnInit {
     return o ? `#${o.oeuf_id} (${o.date_collecte})` : id;
   }
 
-  openCreate() { this.editId = null; this.form = {}; this.showModal = true; }
-  openEdit(v: VenteOeufs) { this.editId = v.vente_id!; this.form = { ...v }; this.showModal = true; }
+  saveError = '';
+
+  openCreate() { this.editId = null; this.form = {}; this.saveError = ''; this.showModal = true; }
+  openEdit(v: VenteOeufs) { this.editId = v.vente_id!; this.form = { ...v }; this.saveError = ''; this.showModal = true; }
 
   save() {
+    this.saveError = '';
+    if (!this.form.oeuf_id) { this.saveError = 'Veuillez sélectionner la source d\'oeufs.'; return; }
+    if (!this.form.date_vente) { this.saveError = 'La date de vente est obligatoire.'; return; }
+    if (!(this.form.nombre_vendus! >= 1)) { this.saveError = 'Le nombre vendu doit être ≥ 1.'; return; }
+    if (!(this.form.prix_unitaire! > 0)) { this.saveError = 'Le prix unitaire doit être > 0.'; return; }
     this.saving = true;
     const obs = this.editId ? this.svc.update(this.editId, this.form as VenteOeufs) : this.svc.create(this.form as VenteOeufs);
-    obs.subscribe({ next: () => { this.showModal = false; this.saving = false; this.load(); }, error: () => { this.saving = false; } });
+    obs.subscribe({
+      next: () => { this.showModal = false; this.saving = false; this.load(); },
+      error: (err) => { this.saving = false; this.saveError = err?.error?.error ?? 'Erreur lors de l\'enregistrement.'; },
+    });
   }
 
   confirmDelete(id: number) { this.deleteId = id; this.showConfirm = true; }

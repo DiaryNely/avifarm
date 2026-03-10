@@ -45,13 +45,22 @@ export class OeufsComponent implements OnInit {
       .reduce((s, i) => s + i.nombre_incubes, 0);
   }
 
-  openCreate() { this.editId = null; this.form = {}; this.showModal = true; }
-  openEdit(o: EnregistrementOeufs) { this.editId = o.oeuf_id!; this.form = { ...o }; this.showModal = true; }
+  saveError = '';
+
+  openCreate() { this.editId = null; this.form = {}; this.saveError = ''; this.showModal = true; }
+  openEdit(o: EnregistrementOeufs) { this.editId = o.oeuf_id!; this.form = { ...o }; this.saveError = ''; this.showModal = true; }
 
   save() {
+    this.saveError = '';
+    if (!this.form.lot_id) { this.saveError = 'Veuillez sélectionner un lot.'; return; }
+    if (!this.form.date_collecte) { this.saveError = 'La date de collecte est obligatoire.'; return; }
+    if (!(this.form.nombre_oeufs! >= 1)) { this.saveError = 'Le nombre d\'oeufs doit être ≥ 1.'; return; }
     this.saving = true;
     const obs = this.editId ? this.svc.update(this.editId, this.form as EnregistrementOeufs) : this.svc.create(this.form as EnregistrementOeufs);
-    obs.subscribe({ next: () => { this.showModal = false; this.saving = false; this.load(); }, error: () => { this.saving = false; } });
+    obs.subscribe({
+      next: () => { this.showModal = false; this.saving = false; this.load(); },
+      error: (err) => { this.saving = false; this.saveError = err?.error?.error ?? 'Erreur lors de l\'enregistrement.'; },
+    });
   }
 
   confirmDelete(id: number) { this.deleteId = id; this.showConfirm = true; }

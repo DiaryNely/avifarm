@@ -9,6 +9,29 @@
     </div>
   </div>
 
+  <!-- ── Contrôle de simulation ── -->
+  <div class="sim-bar" [class.sim-bar--loading]="simLoading">
+    <div class="sim-bar__info">
+      <span class="material-icons-round">schedule</span>
+      <span class="sim-bar__label">Date de simulation</span>
+      <span class="sim-bar__date">{{ simDate ? (simDate | date:'EEEE dd MMMM yyyy':'':'fr') : '…' }}</span>
+    </div>
+    <div class="sim-bar__actions">
+      <button class="sim-btn" (click)="advance(1)" [disabled]="simLoading" title="+1 jour">
+        <span class="material-icons-round">add</span> +1 jour
+      </button>
+      <button class="sim-btn" (click)="advance(7)" [disabled]="simLoading" title="+1 semaine">
+        <span class="material-icons-round">fast_forward</span> +1 semaine
+      </button>
+      <button class="sim-btn" (click)="advance(30)" [disabled]="simLoading" title="+1 mois">
+        <span class="material-icons-round">skip_next</span> +1 mois
+      </button>
+      <button class="sim-btn sim-btn--reset" (click)="resetSim()" [disabled]="simLoading" title="Revenir à aujourd'hui">
+        <span class="material-icons-round">restart_alt</span> Réinitialiser
+      </button>
+    </div>
+  </div>
+
   <!-- ── Stat cards globales ── -->
   @if (loading) {
     <div class="loading-state"><div class="spinner"></div> Chargement...</div>

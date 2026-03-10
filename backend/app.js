@@ -11,6 +11,7 @@ const incubationRoutes        = require('./routes/incubation.routes');
 const venteOeufsRoutes        = require('./routes/venteOeufs.routes');
 const ventePouletsRoutes      = require('./routes/ventePoulets.routes');
 const coutAchatRoutes         = require('./routes/coutAchat.routes');
+const simulationRoutes        = require('./routes/simulation.routes');
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use('/api/incubations',         incubationRoutes);
 app.use('/api/vente-oeufs',         venteOeufsRoutes);
 app.use('/api/vente-poulets',       ventePouletsRoutes);
 app.use('/api/cout-achat',          coutAchatRoutes);
+app.use('/api/simulation',          simulationRoutes);
 
 // Route de base
 app.get('/', (req, res) => {

@@ -1,7 +1,3 @@
-# Environment variables (contient les mots de passe)
-.env
-**/.env
-
 # Dependencies
 node_modules/
 **/node_modules/

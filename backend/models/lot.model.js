@@ -1,9 +1,10 @@
 const { sql, getPool } = require('../config/db');
+const sim = require('../simulation');
 
 // ── Helpers calcul métier ──────────────────────────────────
 
 function weeksBetween(dateEntree) {
-  const ms = Date.now() - new Date(dateEntree).getTime();
+  const ms = sim.getDate().getTime() - new Date(dateEntree).getTime();
   return Math.max(0, Math.floor(ms / (7 * 24 * 60 * 60 * 1000)));
 }
 

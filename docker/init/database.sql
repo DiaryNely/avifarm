@@ -192,70 +192,19 @@ GO
 --  DONNÉES DE TEST
 -- ============================================================
 
--- Races
+-- Race
 INSERT INTO Race (nom, prix_nourrit_g, prix_vente_g, prix_oeuf, semaine_ponte, duree_incubation)
-VALUES
-    ('R1', 150, 200, 500, 20, 45),
-    ('R2', 120, 180, 450, 22, 42);
+VALUES ('Cobb 500', 150, 200, 500, 20, 45);
 
--- Modèle de croissance R1
-INSERT INTO CroissanceRace (race_id, semaine, poids_initial, gain_poids, nourrit_semaine)
-VALUES
-    (1, 0, 150,  NULL, 0),
-    (1, 1, NULL, 30,   60),
-    (1, 2, NULL, 40,   60),
-    (1, 3, NULL, 50,   80),
-    (1, 4, NULL, 60,   80),
-    (1, 5, NULL, 70,   100),
-    (1, 6, NULL, 80,   100);
 
--- Modèle de croissance R2
-INSERT INTO CroissanceRace (race_id, semaine, poids_initial, gain_poids, nourrit_semaine)
-VALUES
-    (2, 0, 130,  NULL, 0),
-    (2, 1, NULL, 25,   55),
-    (2, 2, NULL, 35,   55),
-    (2, 3, NULL, 45,   75),
-    (2, 4, NULL, 55,   75),
-    (2, 5, NULL, 65,   95);
 
--- Lots
+-- Lot
 INSERT INTO Lot (numero, race_id, nombre_initial, date_entree)
-VALUES
-    ('Lot 1', 1, 500,  '2025-03-04'),
-    ('Lot 2', 1, 3000, '2025-02-01'),
-    ('Lot 3', 2, 1000, '2025-01-15');
+VALUES ('Lot 1', 1, 100, '2026-03-09');
 
 -- Coût d'achat
 INSERT INTO CoutAchat (lot_id, cout_total, date_achat)
-VALUES
-    (1, 750000,   '2025-03-04'),
-    (2, 4500000,  '2025-02-01'),
-    (3, 1200000,  '2025-01-15');
-
--- Mortalité
-INSERT INTO Mortalite (lot_id, date_mort, nombre_morts, cause)
-VALUES
-    (2, '2025-02-10', 20, 'Maladie'),
-    (2, '2025-02-20', 30, 'Maladie');
-
--- Enregistrement oeufs (Lot 2 pond depuis semaine 20+)
-INSERT INTO EnregistrementOeufs (lot_id, date_collecte, nombre_oeufs)
-VALUES
-    (2, '2025-03-01', 20),
-    (2, '2025-03-02', 35),
-    (2, '2025-03-03', 40);
-
--- Vente d'oeufs
-INSERT INTO VenteOeufs (oeuf_id, nombre_vendus, prix_unitaire, date_vente)
-VALUES
-    (1, 20, 500, '2025-03-01'),
-    (2, 35, 500, '2025-03-02');
-
--- Incubation (50 oeufs du jour 3 incubés)
-INSERT INTO Incubation (oeuf_id, nombre_incubes, date_debut, date_eclosion, statut)
-VALUES
-    (3, 40, '2025-03-03', '2025-04-17', 'en_cours');
+VALUES (1, 500000, '2026-03-09');
 
 GO
 

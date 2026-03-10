@@ -7,6 +7,7 @@ import { RaceService } from '../../core/services/race.service';
 import { LotService } from '../../core/services/lot.service';
 import { MortaliteService } from '../../core/services/mortalite.service';
 import { OeufsService } from '../../core/services/oeufs.service';
+import { SimulationService } from '../../core/services/simulation.service';
 import { LotSituation } from '../../core/models/models';
 
 interface StatCard { label: string; value: number; icon: string; color: string; }
@@ -22,11 +23,14 @@ export class DashboardComponent implements OnInit {
   private lotSvc   = inject(LotService);
   private mortSvc  = inject(MortaliteService);
   private oeufsSvc = inject(OeufsService);
+  private simSvc   = inject(SimulationService);
 
   stats: StatCard[] = [];
   situations: LotSituation[] = [];
   selectedLotId: number | null = null;
   loading = true;
+  simDate: string | null = null;
+  simLoading = false;
 
   get selectedSit(): LotSituation | undefined {
     return this.situations.find(s => s.lot_id === +this.selectedLotId!);
@@ -42,16 +46,24 @@ export class DashboardComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.loadAll();
+  }
+
+  private loadAll() {
+    this.loading = true;
     forkJoin({
       races:      this.raceSvc.getAll(),
       lots:       this.lotSvc.getAll(),
       morts:      this.mortSvc.getAll(),
       oeufs:      this.oeufsSvc.getAll(),
       situations: this.lotSvc.getSituation(),
+      sim:        this.simSvc.getDate(),
     }).subscribe({
-      next: ({ races, lots, morts, oeufs, situations }) => {
+      next: ({ races, lots, morts, oeufs, situations, sim }) => {
         this.situations = situations;
-        if (situations.length > 0) this.selectedLotId = situations[0].lot_id;
+        this.simDate = sim.date;
+        if (situations.length > 0 && !this.selectedLotId)
+          this.selectedLotId = situations[0].lot_id;
         this.stats = [
           { label: 'Races',          value: races.length,                           icon: 'pets',          color: 'green' },
           { label: 'Lots Total',     value: lots.length,                            icon: 'inventory_2',   color: 'blue'  },
@@ -62,6 +74,24 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
       error: () => { this.loading = false; },
+    });
+  }
+
+  advance(days: number) {
+    this.simLoading = true;
+    this.simSvc.advance(days).subscribe({
+      next: () => this.loadAll(),
+      error: () => { this.simLoading = false; },
+      complete: () => { this.simLoading = false; },
+    });
+  }
+
+  resetSim() {
+    this.simLoading = true;
+    this.simSvc.reset().subscribe({
+      next: () => this.loadAll(),
+      error: () => { this.simLoading = false; },
+      complete: () => { this.simLoading = false; },
     });
   }
 }

@@ -52,7 +52,7 @@
   <div class="form-grid">
     <div class="form-group">
       <label>Lot *</label>
-      <select [(ngModel)]="form.lot_id">
+      <select [(ngModel)]="form.lot_id" (ngModelChange)="onLotChange($event)">
         <option value="" disabled>Choisir un lot</option>
         @for (l of lots; track l.lot_id) {
           <option [value]="l.lot_id">{{ l.numero }}</option>

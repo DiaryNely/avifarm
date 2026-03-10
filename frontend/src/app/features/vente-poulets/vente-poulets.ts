@@ -4,8 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { VentePouletsService } from '../../core/services/vente-poulets.service';
 import { LotService } from '../../core/services/lot.service';
+import { RaceService } from '../../core/services/race.service';
 import { ModalComponent } from '../../shared/components/modal/modal';
-import { VentePoulets, Lot } from '../../core/models/models';
+import { VentePoulets, Lot, LotSituation, Race } from '../../core/models/models';
 
 @Component({
   selector: 'app-vente-poulets',
@@ -14,10 +15,12 @@ import { VentePoulets, Lot } from '../../core/models/models';
   styleUrl: './vente-poulets.scss',
 })
 export class VentePouletsComponent implements OnInit {
-  private svc    = inject(VentePouletsService);
-  private lotSvc = inject(LotService);
+  private svc     = inject(VentePouletsService);
+  private lotSvc  = inject(LotService);
+  private raceSvc = inject(RaceService);
 
   items: VentePoulets[] = []; lots: Lot[] = [];
+  situations: LotSituation[] = []; races: Race[] = [];
   loading = false; error = '';
   showModal = false; saving = false;
   editId: number | null = null; form: Partial<VentePoulets> = {};
@@ -29,13 +32,35 @@ export class VentePouletsComponent implements OnInit {
 
   load() {
     this.loading = true; this.error = '';
-    forkJoin({ items: this.svc.getAll(), lots: this.lotSvc.getAll() }).subscribe({
-      next: ({ items, lots }) => { this.items = items; this.lots = lots; this.loading = false; },
+    forkJoin({
+      items: this.svc.getAll(),
+      lots: this.lotSvc.getAll(),
+      situations: this.lotSvc.getSituation(),
+      races: this.raceSvc.getAll(),
+    }).subscribe({
+      next: ({ items, lots, situations, races }) => {
+        this.items = items; this.lots = lots;
+        this.situations = situations; this.races = races;
+        this.loading = false;
+      },
       error: () => { this.error = 'Impossible de charger les ventes.'; this.loading = false; },
     });
   }
 
   lotNum(id: number) { return this.lots.find(l => l.lot_id === id)?.numero ?? id; }
+
+  onLotChange(lotId: number | string) {
+    const id = +lotId;
+    const sit = this.situations.find(s => s.lot_id === id);
+    if (sit) {
+      this.form.poids_moyen_g = sit.poids_moyen_g ?? undefined;
+    }
+    const lot = this.lots.find(l => l.lot_id === id);
+    if (lot) {
+      const race = this.races.find(r => r.race_id === lot.race_id);
+      if (race) { this.form.prix_vente_g = race.prix_vente_g; }
+    }
+  }
   computeTotal(v: Partial<VentePoulets>) { return (v.nombre_vendus ?? 0) * (v.poids_moyen_g ?? 0) * (v.prix_vente_g ?? 0); }
 
   openCreate() { this.editId = null; this.form = {}; this.saveError = ''; this.showModal = true; }

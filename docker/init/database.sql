@@ -108,6 +108,7 @@ CREATE TABLE Incubation (
     date_debut      DATE              NOT NULL,          -- Début d'incubation
     date_eclosion   DATE              NOT NULL,          -- Calculé : date_debut + duree_incubation
     lot_issu_id     INT               NULL,              -- Lot créé après éclosion
+    nombre_non_eclos INT              NULL,              -- Oeufs non éclos / pourris (renseigné à l'éclosion)
     statut          VARCHAR(20)       DEFAULT 'en_cours' -- 'en_cours', 'eclos', 'echoue'
         CHECK (statut IN ('en_cours', 'eclos', 'echoue')),
 

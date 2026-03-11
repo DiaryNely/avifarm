@@ -55,6 +55,14 @@ const lotController = {
       res.status(204).send();
     } catch (err) { next(err); }
   },
+
+  async getPoidsAt(req, res, next) {
+    try {
+      const data = await Lot.getPoidsAt(parseInt(req.params.id), req.query.date);
+      if (!data) return res.status(404).json({ error: 'Lot introuvable' });
+      res.json(data);
+    } catch (err) { next(err); }
+  },
 };
 
 module.exports = lotController;

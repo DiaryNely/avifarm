@@ -14,6 +14,9 @@ export class LotService {
   getSituation(): Observable<LotSituation[]>         { return this.http.get<LotSituation[]>(`${this.url}/situation`); }
   getSituationAtDate(date: string): Observable<LotSituation[]> { return this.http.get<LotSituation[]>(`${this.url}/situation`, { params: { date } }); }
   getSituationById(id: number): Observable<LotSituation> { return this.http.get<LotSituation>(`${this.url}/${id}/situation`); }
+  getPoidsAt(lotId: number, date: string): Observable<{ poids_moyen_g: number; jours: number; prix_vente_g: number }> {
+    return this.http.get<{ poids_moyen_g: number; jours: number; prix_vente_g: number }>(`${this.url}/${lotId}/poids`, { params: { date } });
+  }
   create(d: Lot): Observable<Lot>                    { return this.http.post<Lot>(this.url, d); }
   update(id: number, d: Lot): Observable<Lot>        { return this.http.put<Lot>(`${this.url}/${id}`, d); }
   delete(id: number): Observable<void>               { return this.http.delete<void>(`${this.url}/${id}`); }

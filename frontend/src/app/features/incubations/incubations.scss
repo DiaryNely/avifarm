@@ -1,4 +1,19 @@
 .confirm-text { padding: 8px 0; color: var(--text-secondary); line-height: 1.6; }
+.text-muted { color: var(--text-secondary, #9ca3af); }
+
+.non-eclos-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #92400e;
+  font-size: .9rem;
+  .material-icons-round { color: #ea580c; font-size: 18px; }
+  strong { font-weight: 700; color: #b91c1c; }
+}
 
 /* ── Action éclosion ── */
 .btn-eclosion {

@@ -115,8 +115,9 @@ const Incubation = {
       throw Object.assign(new Error('Cette incubation est déjà terminée (éclos ou échouée)'), { statusCode: 422 });
 
     const nombreEclos = parseInt(data.nombre_eclos, 10);
-    if (isNaN(nombreEclos) || nombreEclos < 1 || nombreEclos > inc.nombre_incubes)
-      throw Object.assign(new Error(`Le nombre de poussins éclos doit être entre 1 et ${inc.nombre_incubes}`), { statusCode: 422 });
+    if (isNaN(nombreEclos) || nombreEclos < 0 || nombreEclos > inc.nombre_incubes)
+      throw Object.assign(new Error(`Le nombre de poussins éclos doit être entre 0 et ${inc.nombre_incubes}`), { statusCode: 422 });
+    const nombreNonEclos = inc.nombre_incubes - nombreEclos;
 
     // 2. Date d'entrée du nouveau lot = date d'éclosion prévue
     const dateEclosionStr = toDateStr(inc.date_eclosion);
@@ -142,10 +143,11 @@ const Incubation = {
 
     // 5. Mark incubation as eclos and link created lot
     const result = await pool.request()
-      .input('id',          sql.Int, id)
-      .input('lot_issu_id', sql.Int, newLot.lot_id)
+      .input('id',               sql.Int, id)
+      .input('lot_issu_id',      sql.Int, newLot.lot_id)
+      .input('nombre_non_eclos', sql.Int, nombreNonEclos)
       .query(`
-        UPDATE Incubation SET statut = 'eclos', lot_issu_id = @lot_issu_id
+        UPDATE Incubation SET statut = 'eclos', lot_issu_id = @lot_issu_id, nombre_non_eclos = @nombre_non_eclos
         OUTPUT INSERTED.*
         WHERE incubation_id = @id
       `);

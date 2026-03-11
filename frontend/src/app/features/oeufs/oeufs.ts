@@ -45,6 +45,13 @@ export class OeufsComponent implements OnInit {
       .reduce((s, i) => s + i.nombre_incubes, 0);
   }
 
+  /** Nombre total d'oeufs non éclos / pourris pour un enregistrement donné */
+  totalNonEclos(oeufId: number): number {
+    return this.incubations
+      .filter(i => i.oeuf_id === oeufId && i.statut === 'eclos')
+      .reduce((s, i) => s + (i.nombre_non_eclos ?? 0), 0);
+  }
+
   saveError = '';
 
   openCreate() { this.editId = null; this.form = {}; this.saveError = ''; this.showModal = true; }

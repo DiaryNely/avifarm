@@ -64,68 +64,6 @@
     }
   </div>
 
-  <!-- ── Filtre date + tableau situation détaillé ── -->
-  @if (lots.length > 0) {
-    <div class="card situation-card">
-      <div class="situation-header">
-        <h2 class="section-title"><span class="material-icons-round">analytics</span> Situation détaillée</h2>
-        <div class="date-filter">
-          <label for="filterDate">Date :</label>
-          <input id="filterDate" type="date" [(ngModel)]="filterDate" (ngModelChange)="loadSituations()" />
-          @if (filterDate) {
-            <button class="btn btn-sm btn-outline" (click)="filterDate=''; loadSituations()">
-              <span class="material-icons-round">clear</span> Réinitialiser
-            </button>
-          }
-        </div>
-      </div>
-      <div class="table-wrapper">
-        <table class="table table-situation">
-          <thead>
-            <tr>
-              <th>Lot</th>
-              <th>Semaine</th>
-              <th>Vivants</th>
-              <th>Poids Moy. (g)</th>
-              <th>Poids Total (kg)</th>
-              <th>Nb Oeufs</th>
-              <th>Valeur Poulets (Ar)</th>
-              <th>Val. Unitaire (Ar)</th>
-              <th>Oeufs Vendus</th>
-              <th>Rev. Oeufs (Ar)</th>
-              <th>Poulets Vendus</th>
-              <th>Rev. Poulets (Ar)</th>
-              <th>Coût Aliment (Ar)</th>
-              <th>Coût Achat (Ar)</th>
-              <th>Bénéfice (Ar)</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (s of situations; track s.lot_id) {
-              <tr>
-                <td class="cell-name">{{ s.numero }}</td>
-                <td><span class="week-badge">S{{ s.semaine_actuelle }}</span> <small class="day-hint">J{{ s.jour_actuel }}</small></td>
-                <td>{{ s.nombre_actuel }}</td>
-                <td>{{ s.poids_moyen_g | number:'1.0-0' }}</td>
-                <td>{{ s.poids_total_g / 1000 | number:'1.2-2' }}</td>
-                <td>{{ s.total_oeufs }}</td>
-                <td>{{ s.valeur_poulets_ar | number:'1.0-0' }}</td>
-                <td>{{ s.prix_vente_unitaire_ar | number:'1.0-0' }}</td>
-                <td>{{ s.nb_oeufs_vendus }}</td>
-                <td>{{ s.revenu_oeufs_ar | number:'1.0-0' }}</td>
-                <td>{{ s.total_vendus }}</td>
-                <td>{{ s.revenu_vente_poulets_ar | number:'1.0-0' }}</td>
-                <td>{{ s.cout_nourrit_ar | number:'1.0-0' }}</td>
-                <td>{{ s.cout_achat_ar | number:'1.0-0' }}</td>
-                <td [class]="s.benefice_ar >= 0 ? 'cell-positive' : 'cell-negative'">{{ s.benefice_ar | number:'1.0-0' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  }
-
 </div>
 
 <app-modal [title]="editId ? 'Modifier le lot' : 'Nouveau lot'" [show]="showModal" [saving]="saving" (closed)="showModal=false" (saved)="save()">

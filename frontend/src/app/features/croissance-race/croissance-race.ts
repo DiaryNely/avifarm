@@ -103,7 +103,7 @@ export class CroissanceRaceComponent implements OnInit {
     if (!this.form.race_id) { this.saveError = 'Veuillez sélectionner une race.'; return; }
     if (this.form.semaine === undefined || this.form.semaine === null || this.form.semaine < 0) { this.saveError = 'Le numéro de semaine doit être ≥ 0.'; return; }
     if (this.isSemaine0 && !(this.form.poids_initial! > 0)) { this.saveError = 'Le poids initial doit être > 0.'; return; }
-    if (!this.isSemaine0 && !(this.form.gain_poids! > 0)) { this.saveError = 'Le gain de poids doit être > 0.'; return; }
+    // if (!this.isSemaine0 && !(this.form.gain_poids! > 0)) { this.saveError = 'Le gain de poids doit être > 0.'; return; }
     if (!(this.form.nourrit_semaine! >= 0)) { this.saveError = 'La nourriture par semaine est obligatoire.'; return; }
     this.saving = true;
     // Semaine 0 → gain_poids null ; sinon → poids_initial null

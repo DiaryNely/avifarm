@@ -1,82 +1,189 @@
 <div class="page">
+
+  <!-- ── En-tête ── -->
   <div class="page-header">
     <div>
       <h1 class="page-title"><span class="material-icons-round">analytics</span> Situation des Lots</h1>
       <p class="page-subtitle">Vue financière et zootechnique détaillée de chaque lot</p>
     </div>
     <div class="date-filter">
-      <label for="filterDate">Date :</label>
+      <span class="material-icons-round">calendar_today</span>
+      <label for="filterDate">Date de référence</label>
       <input id="filterDate" type="date" [(ngModel)]="filterDate" (ngModelChange)="loadSituations()" />
       @if (filterDate) {
-        <button class="btn btn-sm btn-outline" (click)="filterDate=''; loadSituations()">
-          <span class="material-icons-round">clear</span> Réinitialiser
+        <button class="btn-reset" (click)="filterDate=''; loadSituations()">
+          <span class="material-icons-round">close</span>
         </button>
       }
     </div>
   </div>
 
-  @if (error) { <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div> }
+  @if (error) {
+    <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div>
+  }
 
-  <div class="card">
-    @if (!hasLoaded) {
-      <div class="empty-state">
-        <span class="material-icons-round">event</span>
-        <p>Sélectionnez une date pour afficher la situation des lots</p>
+  <!-- ── États ── -->
+  @if (!hasLoaded) {
+    <div class="empty-banner">
+      <span class="material-icons-round">event_note</span>
+      <div>
+        <p class="empty-banner__title">Choisissez une date</p>
+        <p class="empty-banner__sub">Sélectionnez une date dans le filtre ci-dessus pour voir la situation de tous les lots à ce moment precis.</p>
       </div>
-    } @else if (loading) {
-      <div class="loading-state"><div class="spinner"></div> Chargement...</div>
-    } @else if (situations.length === 0) {
-      <div class="empty-state">
-        <span class="material-icons-round">analytics</span>
-        <p>Aucune situation disponible</p>
+    </div>
+  } @else if (loading) {
+    <div class="loading-state"><div class="spinner"></div> Chargement des situations…</div>
+  } @else if (situations.length === 0) {
+    <div class="empty-banner">
+      <span class="material-icons-round">analytics</span>
+      <div>
+        <p class="empty-banner__title">Aucune donnée</p>
+        <p class="empty-banner__sub">Aucune situation de lot disponible pour cette date.</p>
       </div>
-    } @else {
-      <div class="table-wrapper">
-        <table class="table table-situation">
-          <thead>
-            <tr>
-              <th>Lot</th>
-              <th>Semaine</th>
-              <th>Vivants</th>
-              <th>Poids Moy. (g)</th>
-              <th>Poids Total (kg)</th>
-              <th>Nb Oeufs</th>
-              <th>Valeur Poulets (Ar)</th>
-              <th>Val. Unitaire (Ar)</th>
-              <th>Oeufs Vendus</th>
-              <th>Rev. Oeufs (Ar)</th>
-              <th>Poulets Vendus</th>
-              <th>Rev. Poulets (Ar)</th>
-              <th>Aliment Cumulé (Ar)</th>
-              <th>Aliment/Jour (Ar)</th>
-              <th>Coût Achat (Ar)</th>
-              <th>Bénéfice (Ar)</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (s of situations; track s.lot_id) {
-              <tr>
-                <td class="cell-name">{{ s.numero }}</td>
-                <td><span class="week-badge">S{{ s.semaine_actuelle }}</span> <small class="day-hint">J{{ s.jour_actuel }}</small></td>
-                <td>{{ s.nombre_actuel }}</td>
-                <td>{{ s.poids_moyen_g | number:'1.0-0' }}</td>
-                <td>{{ s.poids_total_g / 1000 | number:'1.2-2' }}</td>
-                <td>{{ s.total_oeufs }}</td>
-                <td>{{ s.valeur_poulets_ar | number:'1.0-0' }}</td>
-                <td>{{ s.prix_vente_unitaire_ar | number:'1.0-0' }}</td>
-                <td>{{ s.nb_oeufs_vendus }}</td>
-                <td>{{ s.revenu_oeufs_ar | number:'1.0-0' }}</td>
-                <td>{{ s.total_vendus }}</td>
-                <td>{{ s.revenu_vente_poulets_ar | number:'1.0-0' }}</td>
-                <td>{{ s.cout_nourrit_ar | number:'1.0-0' }}</td>
-                <td class="cell-jour">{{ s.cout_nourrit_jour_ar | number:'1.0-0' }}</td>
-                <td>{{ s.cout_achat_ar | number:'1.0-0' }}</td>
-                <td [class]="s.benefice_ar >= 0 ? 'cell-positive' : 'cell-negative'">{{ s.benefice_ar | number:'1.0-0' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+    </div>
+  } @else {
+
+    <!-- ── Résumé global ── -->
+    <div class="summary-bar">
+      <div class="summary-item">
+        <span class="material-icons-round">groups</span>
+        <div>
+          <div class="summary-value">{{ situations.length }}</div>
+          <div class="summary-label">Lots analysés</div>
+        </div>
       </div>
-    }
-  </div>
+      <div class="summary-item">
+        <span class="material-icons-round">pets</span>
+        <div>
+          <div class="summary-value">{{ totalVivants | number }}</div>
+          <div class="summary-label">Poulets vivants</div>
+        </div>
+      </div>
+      <div class="summary-item">
+        <span class="material-icons-round">payments</span>
+        <div>
+          <div class="summary-value">{{ totalRevenu | number:'1.0-0' }} Ar</div>
+          <div class="summary-label">Revenus totaux</div>
+        </div>
+      </div>
+      <div class="summary-item" [class.summary-item--pos]="totalBenefice >= 0" [class.summary-item--neg]="totalBenefice < 0">
+        <span class="material-icons-round">{{ totalBenefice >= 0 ? 'trending_up' : 'trending_down' }}</span>
+        <div>
+          <div class="summary-value">{{ totalBenefice | number:'1.0-0' }} Ar</div>
+          <div class="summary-label">Bénéfice global</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Grille de cartes ── -->
+    <div class="lots-grid">
+      @for (s of situations; track s.lot_id) {
+        <div class="lot-card" [class.lot-card--closed]="!s.actif">
+
+          <!-- card header -->
+          <div class="lot-card__header">
+            <div class="lot-card__title">
+              <span class="material-icons-round">groups</span>
+              <span>{{ s.numero }}</span>
+            </div>
+            <div class="lot-card__badges">
+              <span class="badge-week">S{{ s.semaine_actuelle }} · J{{ s.jour_actuel }}</span>
+              <span class="badge-status" [class.badge-status--open]="s.actif" [class.badge-status--closed]="!s.actif">
+                <span class="material-icons-round">{{ s.actif ? 'verified' : 'lock' }}</span>
+                {{ s.actif ? 'Actif' : 'Fermé' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- élevage -->
+          <div class="lot-section">
+            <div class="lot-section__title">
+              <span class="material-icons-round">pets</span> Élevage &amp; Poids
+            </div>
+            <div class="kpi-row">
+              <div class="kpi">
+                <div class="kpi__val">{{ s.nombre_actuel | number }}</div>
+                <div class="kpi__lbl">Vivants</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__val">{{ s.poids_moyen_g | number:'1.0-0' }} g</div>
+                <div class="kpi__lbl">Poids moyen</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__val">{{ s.poids_total_g / 1000 | number:'1.1-1' }} kg</div>
+                <div class="kpi__lbl">Poids total</div>
+              </div>
+              <div class="kpi kpi--accent">
+                <div class="kpi__val">{{ s.prix_vente_unitaire_ar | number:'1.0-0' }} Ar</div>
+                <div class="kpi__lbl">Valeur unitaire</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- oeufs -->
+          <div class="lot-section">
+            <div class="lot-section__title">
+              <span class="material-icons-round">egg_alt</span> Œufs
+            </div>
+            <div class="kpi-row">
+              <div class="kpi">
+                <div class="kpi__val">{{ s.total_oeufs | number }}</div>
+                <div class="kpi__lbl">Collectés</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__val">{{ s.nb_oeufs_vendus | number }}</div>
+                <div class="kpi__lbl">Vendus</div>
+              </div>
+              <div class="kpi kpi--green">
+                <div class="kpi__val">{{ s.revenu_oeufs_ar | number:'1.0-0' }} Ar</div>
+                <div class="kpi__lbl">Revenu œufs</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ventes & coûts -->
+          <div class="lot-section">
+            <div class="lot-section__title">
+              <span class="material-icons-round">shopping_cart</span> Ventes &amp; Coûts
+            </div>
+            <div class="kpi-row">
+              <div class="kpi">
+                <div class="kpi__val">{{ s.total_vendus | number }}</div>
+                <div class="kpi__lbl">Poulets vendus</div>
+              </div>
+              <div class="kpi kpi--green">
+                <div class="kpi__val">{{ s.revenu_vente_poulets_ar | number:'1.0-0' }} Ar</div>
+                <div class="kpi__lbl">Revenu poulets</div>
+              </div>
+              <div class="kpi kpi--orange">
+                <div class="kpi__val">{{ s.cout_nourrit_ar | number:'1.0-0' }} Ar</div>
+                <div class="kpi__lbl">Coût aliment</div>
+              </div>
+              <div class="kpi kpi--orange">
+                <div class="kpi__val">{{ s.cout_nourrit_jour_ar | number:'1.0-0' }} Ar</div>
+                <div class="kpi__lbl">Aliment/jour</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- footer bénéfice -->
+          <div class="lot-card__footer" [class.lot-card__footer--pos]="s.benefice_ar >= 0" [class.lot-card__footer--neg]="s.benefice_ar < 0">
+            <div class="benefice-left">
+              <span class="material-icons-round">{{ s.benefice_ar >= 0 ? 'trending_up' : 'trending_down' }}</span>
+              <span class="benefice-label">Bénéfice net</span>
+            </div>
+            <div class="benefice-details">
+              <span class="benefice-cost">
+                <span class="material-icons-round">remove_circle_outline</span>
+                Achat : {{ s.cout_achat_ar | number:'1.0-0' }} Ar
+              </span>
+              <span class="benefice-value">{{ s.benefice_ar | number:'1.0-0' }} Ar</span>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+
+  }
 </div>

@@ -19,6 +19,16 @@ export class SituationLotsComponent implements OnInit {
   filterDate = '';
   hasLoaded = false;
 
+  get totalVivants(): number {
+    return this.situations.reduce((s, x) => s + (x.nombre_actuel ?? 0), 0);
+  }
+  get totalRevenu(): number {
+    return this.situations.reduce((s, x) => s + (x.revenu_vente_poulets_ar ?? 0) + (x.revenu_oeufs_ar ?? 0), 0);
+  }
+  get totalBenefice(): number {
+    return this.situations.reduce((s, x) => s + (x.benefice_ar ?? 0), 0);
+  }
+
   ngOnInit() {}
 
   loadSituations() {

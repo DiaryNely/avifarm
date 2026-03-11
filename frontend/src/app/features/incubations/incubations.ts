@@ -160,7 +160,7 @@ export class IncubationsComponent implements OnInit {
   }
 
   saveEclosion() {
-    if (!this.eclosionId || !this.eclosionForm.nombre_eclos) return;
+    if (!this.eclosionId || this.eclosionForm.nombre_eclos === null) return;
     this.eclosionSaving = true; this.eclosionError = '';
     this.svc.enregistrerEclosion(this.eclosionId, { nombre_eclos: this.eclosionForm.nombre_eclos }).subscribe({
       next: () => { this.showEclosionModal = false; this.eclosionSaving = false; this.load(); },

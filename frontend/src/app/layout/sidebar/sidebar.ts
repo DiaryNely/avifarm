@@ -17,9 +17,12 @@ export class SidebarComponent {
     { path: '/races',         icon: 'diversity_3',     label: 'Races' },
     { path: '/croissance',    icon: 'trending_up',     label: 'Croissance' },
     { path: '/lots',          icon: 'groups',          label: 'Lots' },
+    { path: '/situation-lots',icon: 'groups',          label: 'situation lots' },
+
 
     { path: '/mortalites',    icon: 'health_and_safety', label: 'Mortalités' },
     { path: '/oeufs',         icon: 'egg_alt',         label: 'Oeufs' },
+
     
     { path: '/incubations',   icon: 'nest_eco_leaf',   label: '' },
     { path: '/incubations',          icon: 'groups',          label: 'incubations' },

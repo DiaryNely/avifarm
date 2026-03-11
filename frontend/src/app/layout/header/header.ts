@@ -31,7 +31,7 @@ export class HeaderComponent {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: any) => {
-        this.pageTitle = TITLES[e.urlAfterRedirects] ?? 'AviFarm';
+        this.pageTitle = TITLES[e.urlAfterRedirects] ?? 'ETU3209';
       });
   }
 

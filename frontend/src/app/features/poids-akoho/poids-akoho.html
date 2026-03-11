@@ -1,0 +1,109 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title"><span class="material-icons-round">monitor_weight</span> Poids Poulet (Akoho)</h1>
+      <p class="page-subtitle">Calculer le poids estimé d'un poulet selon la race et la période d'alimentation</p>
+    </div>
+  </div>
+
+  @if (error && !calculating) {
+    <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div>
+  }
+
+  <div class="calc-layout">
+    <!-- Formulaire -->
+    <div class="card calc-card">
+      <h2 class="card-title"><span class="material-icons-round">tune</span> Paramètres</h2>
+
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>Race *</label>
+          @if (racesLoading) {
+            <div class="loading-inline"><div class="spinner-sm"></div> Chargement...</div>
+          } @else {
+            <select [(ngModel)]="form.raceId" (ngModelChange)="result = null">
+              <option [value]="null" disabled>Choisir une race</option>
+              @for (r of races; track r.race_id) {
+                <option [value]="r.race_id">{{ r.nom }}</option>
+              }
+            </select>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Date début sakafo *</label>
+          <input type="date" [(ngModel)]="form.datedebutsakafo" (ngModelChange)="result = null" />
+        </div>
+
+        <div class="form-group">
+          <label>Date fin sakafo *</label>
+          <input type="date" [(ngModel)]="form.datefinsakafo"
+                 [min]="form.datedebutsakafo"
+                 (ngModelChange)="result = null" />
+        </div>
+
+        @if (jours !== null && jours >= 0) {
+          <div class="form-group form-full duration-hint">
+            <span class="material-icons-round">schedule</span>
+            Durée : <strong>{{ jours }} jour(s)</strong>
+            @if (semaines! > 0) { &nbsp;({{ semaines }} semaine{{ semaines! > 1 ? 's' : '' }} + {{ jours! % 7 }} j) }
+          </div>
+        }
+      </div>
+
+      <div class="calc-actions">
+        <button class="btn btn-primary" [disabled]="!canCalculate || calculating" (click)="calculer()">
+          @if (calculating) {
+            <div class="spinner-sm"></div> Calcul...
+          } @else {
+            <span class="material-icons-round">calculate</span> Calculer
+          }
+        </button>
+        <button class="btn btn-secondary" (click)="reset()">
+          <span class="material-icons-round">refresh</span> Réinitialiser
+        </button>
+      </div>
+    </div>
+
+    <!-- Résultat -->
+    <div class="card result-card" [class.result-ready]="result !== null">
+      <h2 class="card-title"><span class="material-icons-round">scale</span> Résultat</h2>
+
+      @if (calculating) {
+        <div class="result-loading">
+          <div class="spinner"></div>
+          <p>Calcul en cours...</p>
+        </div>
+      } @else if (result !== null) {
+        <div class="result-display">
+          <div class="result-value">{{ result | number:'1.0-2' }}</div>
+          <div class="result-unit">grammes</div>
+          <div class="result-kg">≈ {{ (result / 1000) | number:'1.2-3' }} kg</div>
+        </div>
+        <div class="result-meta">
+          <div class="meta-row">
+            <span class="meta-label"><span class="material-icons-round">pets</span> Race</span>
+            <span class="meta-value">{{ raceName(form.raceId) }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label"><span class="material-icons-round">calendar_today</span> Début</span>
+            <span class="meta-value">{{ form.datedebutsakafo | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label"><span class="material-icons-round">event</span> Fin</span>
+            <span class="meta-value">{{ form.datefinsakafo | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label"><span class="material-icons-round">schedule</span> Durée</span>
+            <span class="meta-value">{{ jours }} jour(s)</span>
+          </div>
+        </div>
+      } @else {
+        <div class="result-empty">
+          <span class="material-icons-round result-empty-icon">monitor_weight</span>
+          <p>Remplissez les paramètres et cliquez sur <strong>Calculer</strong> pour obtenir le poids estimé.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

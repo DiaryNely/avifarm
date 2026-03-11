@@ -18,6 +18,7 @@ export const routes: Routes = [
       { path: 'vente-oeufs',   loadComponent: () => import('./features/vente-oeufs/vente-oeufs').then(m => m.VenteOeufsComponent) },
       { path: 'vente-poulets', loadComponent: () => import('./features/vente-poulets/vente-poulets').then(m => m.VentePouletsComponent) },
       { path: 'cout-achat',    loadComponent: () => import('./features/cout-achat/cout-achat').then(m => m.CoutAchatComponent) },
+      { path: 'poids-akoho',    loadComponent: () => import('./features/poids-akoho/poids-akoho').then(m => m.PoidsAkohoComponent) },
     ]
   },
   { path: '**', redirectTo: '' }

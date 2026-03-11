@@ -20,7 +20,7 @@
       <div class="table-wrapper">
         <table class="table">
           <thead>
-            <tr><th>#</th><th>Lot</th><th>Date Collecte</th><th>Collecte</th><th>Incubés</th><th>Restants</th><th>Actions</th></tr>
+            <tr><th>#</th><th>Lot</th><th>Date Collecte</th><th>Collecte</th><th>Incubés</th><th>Non-éclos</th><th>Restants</th><th>Actions</th></tr>
           </thead>
           <tbody>
             @for (o of items; track o.oeuf_id) {
@@ -33,6 +33,14 @@
                   @let inc = totalIncubes(o.oeuf_id!);
                   @if (inc > 0) {
                     <span class="badge badge-warning">{{ inc }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @let nonEclos = totalNonEclos(o.oeuf_id!);
+                  @if (nonEclos > 0) {
+                    <span class="badge badge-danger">{{ nonEclos }}</span>
                   } @else {
                     <span class="text-muted">—</span>
                   }

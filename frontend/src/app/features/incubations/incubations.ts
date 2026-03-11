@@ -37,7 +37,7 @@ export class IncubationsComponent implements OnInit {
   showEclosionModal = false; eclosionSaving = false; eclosionError = '';
   eclosionId: number | null = null;
   eclosionItem: IncubationDetail | null = null;
-  eclosionForm = { nombre_eclos: null as number | null };
+  eclosionForm: { nombre_eclos: number | null } = { nombre_eclos: null };
 
   // --- Suppression ---
   deleteId: number | null = null; showConfirm = false;

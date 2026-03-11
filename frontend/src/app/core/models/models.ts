@@ -55,6 +55,8 @@ export interface LotSituation {
   valeur_poulets_ar: number;
   nourrit_total_g: number;
   cout_nourrit_ar: number;
+  nourrit_jour_g: number;
+  cout_nourrit_jour_ar: number;
   total_oeufs: number;
   nb_oeufs_vendus: number;
   revenu_oeufs_ar: number;
@@ -96,6 +98,7 @@ export interface IncubationDetail extends Incubation {
   date_collecte: string;
   nombre_oeufs: number;
   lot_issu_numero?: string | null;
+  nombre_non_eclos?: number | null;
 }
 
 export interface VenteOeufs {

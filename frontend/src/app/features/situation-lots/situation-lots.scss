@@ -1,0 +1,149 @@
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+
+  label {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+
+  input[type="date"] {
+    border: 1.5px solid var(--border-color, #e5e7eb);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--text-primary, #111827);
+    background: var(--card-bg, #fff);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    transition: border-color .15s, box-shadow .15s;
+    cursor: pointer;
+
+    &:hover {
+      border-color: #93c5fd;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,.18);
+    }
+
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: .7;
+      filter: invert(40%) sepia(80%) saturate(400%) hue-rotate(190deg);
+      &:hover { opacity: 1; }
+    }
+  }
+}
+
+.btn-sm {
+  font-size: .75rem;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  .material-icons-round { font-size: 14px; }
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  &:hover { background: var(--hover-bg, #f3f4f6); color: var(--text-primary, #111827); }
+}
+
+.table-situation {
+  font-size: .8rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+
+  thead tr {
+    background: #f8fafc;
+  }
+
+  th {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-secondary, #6b7280);
+    padding: 11px 14px;
+    white-space: nowrap;
+    border-bottom: 2px solid var(--border-color, #e5e7eb);
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    z-index: 1;
+
+    &:first-child { border-radius: 8px 0 0 0; }
+    &:last-child  { border-radius: 0 8px 0 0; }
+  }
+
+  td {
+    padding: 10px 14px;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    color: var(--text-primary, #111827);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background .12s;
+    &:hover td { background: #f0f9ff; }
+    &:last-child td { border-bottom: none; }
+  }
+
+  // Colonne lot — en gras
+  .cell-name {
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+  }
+
+  // Séparateur visuel entre groupes de colonnes
+  td:nth-child(5),
+  th:nth-child(5),
+  td:nth-child(8),
+  th:nth-child(8),
+  td:nth-child(12),
+  th:nth-child(12),
+  td:nth-child(14),
+  th:nth-child(14) {
+    border-right: 1.5px solid #e2e8f0;
+  }
+}
+
+.week-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 24px;
+  border-radius: 6px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.day-hint {
+  color: var(--text-secondary, #6b7280);
+  font-size: .7rem;
+  margin-left: 2px;
+}
+
+.cell-positive { color: #059669; font-weight: 600; }
+.cell-negative { color: #dc2626; font-weight: 600; }
+.cell-jour { background: rgba(245,158,11,.08); color: #92400e; font-weight: 600; }

@@ -17,6 +17,7 @@ export class SidebarComponent {
     { path: '/races',         icon: 'pets',          label: 'Races' },
     { path: '/croissance',    icon: 'show_chart',    label: 'Croissance' },
     { path: '/lots',          icon: 'inventory_2',   label: 'Lots' },
+    { path: '/situation-lots', icon: 'analytics',     label: 'Situation Lots' },
     { path: '/mortalites',    icon: 'report',        label: 'Mortalités' },
     { path: '/oeufs',         icon: 'egg',           label: 'Oeufs' },
     { path: '/incubations',   icon: 'science',       label: 'Incubations' },

@@ -49,6 +49,13 @@
                 <td>{{ i.date_eclosion | date:'dd/MM/yyyy' }}</td>
                 <td><span class="badge" [class]="statutClass(i.statut)">{{ statutLabel(i.statut) }}</span></td>
                 <td>
+                  @if (i.statut === 'eclos' && i.nombre_non_eclos != null) {
+                    <span class="badge" [class]="i.nombre_non_eclos > 0 ? 'badge-danger' : 'badge-success'">
+                      {{ i.nombre_non_eclos }}
+                    </span>
+                  } @else { <span class="text-muted">—</span> }
+                </td>
+                <td>
                   @if (i.lot_issu_numero) {
                     <span class="badge badge-success lot-issu-badge">{{ i.lot_issu_numero }}</span>
                   } @else {
@@ -187,9 +194,18 @@
     <div class="form-grid" style="margin-top:16px">
       <div class="form-group form-full">
         <label>Nombre de poussins éclos *</label>
-        <input type="number" [(ngModel)]="eclosionForm.nombre_eclos" min="1" [max]="eclosionItem.nombre_incubes" />
-        <span class="form-hint">Max : {{ eclosionItem.nombre_incubes }} (= nb d’oeufs incubés)</span>
+        <input type="number" [(ngModel)]="eclosionForm.nombre_eclos" min="0" [max]="eclosionItem.nombre_incubes" />
+        <span class="form-hint">Max : {{ eclosionItem.nombre_incubes }} (= nb d'oeufs incubés)</span>
       </div>
+      @if (eclosionForm.nombre_eclos != null) {
+        <div class="form-group form-full">
+          <div class="non-eclos-preview">
+            <span class="material-icons-round">cancel</span>
+            Oeufs non éclos / pourris :
+            <strong>{{ eclosionItem.nombre_incubes - eclosionForm.nombre_eclos }}</strong>
+          </div>
+        </div>
+      }
     </div>
     @if (eclosionError) {
       <div class="error-msg" style="margin-top:8px"><span class="material-icons-round">error</span>{{ eclosionError }}</div>

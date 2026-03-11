@@ -27,7 +27,10 @@ const enregistrementOeufsController = {
     try {
       const data = await EnregistrementOeufs.create(req.body);
       res.status(201).json(data);
-    } catch (err) { next(err); }
+    } catch (err) {
+      if (err.status) return res.status(err.status).json({ error: err.error });
+      next(err);
+    }
   },
 
   async update(req, res, next) {

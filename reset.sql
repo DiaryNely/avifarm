@@ -1,0 +1,20 @@
+-- Active: 1772737697272@@127.0.0.1@1433@ElevagePoulets@dbo
+USE ElevagePoulets; 
+DELETE FROM Incubation; 
+DELETE FROM VenteOeufs; 
+DELETE FROM VentePoulets; 
+DELETE FROM EnregistrementOeufs; 
+DELETE FROM Mortalite; 
+DELETE FROM CoutAchat; 
+DELETE FROM CroissanceRace; 
+DELETE FROM Lot; 
+DELETE FROM Race;
+DBCC CHECKIDENT ('Incubation', RESEED, 0); 
+DBCC CHECKIDENT ('VenteOeufs', RESEED, 0); 
+DBCC CHECKIDENT ('VentePoulets', RESEED, 0); 
+DBCC CHECKIDENT ('EnregistrementOeufs', RESEED, 0); 
+DBCC CHECKIDENT ('Mortalite', RESEED, 0); 
+DBCC CHECKIDENT ('CoutAchat', RESEED, 0); 
+DBCC CHECKIDENT ('CroissanceRace', RESEED, 0); 
+DBCC CHECKIDENT ('Lot', RESEED, 0); 
+DBCC CHECKIDENT ('Race', RESEED, 0);

@@ -117,6 +117,10 @@ CREATE TABLE Incubation (
 );
 GO
 
+ALTER TABLE [Incubation] 
+ADD nombre_non_eclos int;
+GO
+
 -- ============================================================
 --  TABLE : VenteOeufs
 --  Enregistre les ventes d'oeufs

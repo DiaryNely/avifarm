@@ -33,11 +33,11 @@
 .nav-item {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 14px; border-radius: var(--radius);
-  color: #94A3B8; transition: var(--transition);
+  color: #FBCFE8; transition: var(--transition);
   min-height: 44px; cursor: pointer; white-space: nowrap;
 
-  &:hover { background: var(--sidebar-hover); color: #E2E8F0; }
-  &.active { background: rgba(16,185,129,.15); color: var(--accent); }
+  &:hover { background: var(--sidebar-hover); color: #FDF2F8; }
+  &.active { background: rgba(236,72,153,.2); color: var(--accent); }
 }
 .nav-icon { font-size: 20px; flex-shrink: 0; }
 .nav-label { font-size: .875rem; font-weight: 500; }

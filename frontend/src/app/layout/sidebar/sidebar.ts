@@ -13,16 +13,16 @@ export class SidebarComponent {
   @Input() collapsed = false;
 
   navItems: NavItem[] = [
-    { path: '/dashboard',     icon: 'dashboard',     label: 'Tableau de bord' },
-    { path: '/races',         icon: 'pets',          label: 'Races' },
-    { path: '/croissance',    icon: 'show_chart',    label: 'Croissance' },
-    { path: '/lots',          icon: 'inventory_2',   label: 'Lots' },
-    { path: '/situation-lots', icon: 'analytics',     label: 'Situation Lots' },
-    { path: '/mortalites',    icon: 'report',        label: 'Mortalités' },
-    { path: '/oeufs',         icon: 'egg',           label: 'Oeufs' },
-    { path: '/incubations',   icon: 'science',       label: 'Incubations' },
-    { path: '/vente-oeufs',   icon: 'sell',          label: 'Vente Oeufs' },
-    { path: '/vente-poulets', icon: 'storefront',    label: 'Vente Poulets' },
-    { path: '/cout-achat',    icon: 'receipt_long',  label: "Coûts d'Achat" },
+    { path: '/dashboard',     icon: 'space_dashboard', label: 'Tableau de bord' },
+    { path: '/races',         icon: 'flutter_dash',    label: 'Races' },
+    { path: '/croissance',    icon: 'trending_up',     label: 'Croissance' },
+    { path: '/lots',          icon: 'grain',           label: 'Lots' },
+    { path: '/situation-lots', icon: 'query_stats',    label: 'Situation Lots' },
+    { path: '/mortalites',    icon: 'heart_broken',    label: 'Mortalités' },
+    { path: '/oeufs',         icon: 'egg_alt',         label: 'Oeufs' },
+    { path: '/incubations',   icon: 'nest_cam_wired_stand', label: 'Incubations' },
+    { path: '/vente-oeufs',   icon: 'shopping_basket', label: 'Vente Oeufs' },
+    { path: '/vente-poulets', icon: 'store',           label: 'Vente Poulets' },
+    { path: '/cout-achat',    icon: 'payments',        label: "Coûts d'Achat" },
   ];
 }

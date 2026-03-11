@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "============================================"
+echo "  NETTOYAGE COMPLET - Base ElevagePoulets"
+echo "============================================"
+echo
+
+docker exec -i avifarm-sqlserver /opt/mssql-tools18/bin/sqlcmd \
+  -S localhost -U sa -P 'AviFarm@2024!' -C -Q "
+USE ElevagePoulets;
+DELETE FROM Incubation;
+DELETE FROM VenteOeufs;
+DELETE FROM VentePoulets;
+DELETE FROM EnregistrementOeufs;
+DELETE FROM Mortalite;
+DELETE FROM CoutAchat;
+DELETE FROM CroissanceRace;
+DELETE FROM Lot;
+DELETE FROM Race;
+DBCC CHECKIDENT ('Incubation', RESEED, 0);
+DBCC CHECKIDENT ('VenteOeufs', RESEED, 0);
+DBCC CHECKIDENT ('VentePoulets', RESEED, 0);
+DBCC CHECKIDENT ('EnregistrementOeufs', RESEED, 0);
+DBCC CHECKIDENT ('Mortalite', RESEED, 0);
+DBCC CHECKIDENT ('CoutAchat', RESEED, 0);
+DBCC CHECKIDENT ('CroissanceRace', RESEED, 0);
+DBCC CHECKIDENT ('Lot', RESEED, 0);
+DBCC CHECKIDENT ('Race', RESEED, 0);
+PRINT 'Toutes les tables ont ete videes !';
+"
+
+echo
+echo "============================================"
+echo "  Base ElevagePoulets nettoyee !"
+echo "============================================"

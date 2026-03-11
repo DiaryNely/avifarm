@@ -9,11 +9,7 @@ function daysBetween(dateEntree, refDate) {
   return Math.max(0, Math.floor(ms / (24 * 60 * 60 * 1000)));
 }
 
-/**
- * Poids moyen interpolé au jour près.
- * On prend le poids complet des semaines révolues, puis on ajoute
- * (gain de la semaine en cours) × (jours écoulés dans cette semaine) / 7.
- */
+
 function computePoidsMoyen(croissance, jours) {
   const semaineComplete = Math.floor(jours / 7);
   const joursRestants   = jours % 7;           // 0-6
@@ -37,10 +33,7 @@ function computePoidsMoyen(croissance, jours) {
   return Math.round(poids * 100) / 100;
 }
 
-/**
- * Ration journalière à la date choisie (g/jour pour tout le lot).
- * On prend le nourrit_semaine de la semaine en cours et on divise par 7.
- */
+
 function computeNourritureJour(croissance, jours, nombreActuel) {
   const semaineCourante = Math.floor(jours / 7);
   let nourritSemaine = 0;
@@ -53,12 +46,6 @@ function computeNourritureJour(croissance, jours, nombreActuel) {
   return (nourritSemaine / 7) * nombreActuel;
 }
 
-/**
- * Nourriture totale interpolée au jour.
- * Semaines < semaineComplete : ration complète (semaines terminées).
- * Semaine = semaineComplete  : ration × (joursRestants / 7) — jours écoulés dans la semaine courante.
- * → À J0 : 0 g consommés (joursRestants = 0, aucune semaine terminée).
- */
 function computeNourritureTotal(croissance, jours, nombreActuel) {
   const semaineComplete = Math.floor(jours / 7);
   const joursRestants   = jours % 7;
@@ -134,7 +121,6 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, n
   };
 }
 
-// ── Requêtes brutes (réutilisées par getSituation / getSituationById) ──
 
 async function fetchRawSituationData(pool, lotId) {
   const lotFilter   = lotId != null ? 'WHERE l.lot_id = @lotId' : '';
@@ -184,7 +170,6 @@ async function fetchRawSituationData(pool, lotId) {
   return { lots: lots.recordset, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap };
 }
 
-// ── Modèle ─────────────────────────────────────────────────
 
 const Lot = {
   async getAll() {
@@ -202,7 +187,6 @@ const Lot = {
     return result.recordset[0] || null;
   },
 
-  // Situation complète — calculs métier côté backend
   async getSituation(refDate) {
     const pool = await getPool();
     const { lots, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap } =
@@ -262,10 +246,7 @@ const Lot = {
     return result.recordset[0] || null;
   },
 
-  /**
-   * Calcule le poids moyen interpolé d'un lot à une date donnée.
-   * Utilisé pour pré-remplir la vente sans saisie manuelle.
-   */
+
   async getPoidsAt(lotId, date) {
     const pool = await getPool();
     const lotResult = await pool.request()
@@ -285,6 +266,28 @@ const Lot = {
     const jours = daysBetween(lot.date_entree, date);
     const poids_moyen_g = computePoidsMoyen(croissanceResult.recordset, jours);
     return { poids_moyen_g, jours, prix_vente_g: parseFloat(lot.prix_vente_g) };
+  },
+
+  
+  async getPoidsAkoho(raceId, datedebutsakafo, datefinsakafo) {
+    const pool = await getPool();
+
+    const raceResult = await pool.request()
+      .input('raceId', sql.Int, raceId)
+      .query('SELECT race_id, nom, prix_nourrit_g, prix_vente_g FROM Race WHERE race_id = @raceId');
+    const race = raceResult.recordset[0];
+    if (!race) return null;
+
+    const croissanceResult = await pool.request()
+      .input('raceId', sql.Int, raceId)
+      .query('SELECT semaine, poids_initial, gain_poids, nourrit_semaine FROM CroissanceRace WHERE race_id = @raceId ORDER BY semaine');
+    const croissance = croissanceResult.recordset;
+
+    const jours   = daysBetween(datedebutsakafo, datefinsakafo);
+
+    const poids_g = computePoidsMoyen(croissance, jours);
+
+    return poids_g;
   },
 };
 

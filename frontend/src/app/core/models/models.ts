@@ -58,6 +58,7 @@ export interface LotSituation {
   nourrit_jour_g: number;
   cout_nourrit_jour_ar: number;
   total_oeufs: number;
+  valeur_oeufs_ar: number;
   nb_oeufs_vendus: number;
   revenu_oeufs_ar: number;
   cout_achat_ar: number;

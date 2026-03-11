@@ -100,6 +100,7 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, n
   const coutAchat          = parseFloat(coutAchatMap.get(lot.lot_id) || 0);
   const revenuVentePoulets = parseFloat(revenuVentePouletsMap.get(lot.lot_id) || 0);
   const prixVenteUnitaire  = poidsMoyenG * parseFloat(lot.prix_vente_g);
+  const valeurOeufs        = totalOeufs * parseFloat(lot.prix_oeuf || 0);
 
   return {
     lot_id:           lot.lot_id,
@@ -124,6 +125,7 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, n
     nourrit_jour_g:   nourritJourG,
     cout_nourrit_jour_ar: coutNourritJour,
     total_oeufs:      totalOeufs,
+    valeur_oeufs_ar:         valeurOeufs,
     nb_oeufs_vendus:         nbOeufsVendus,
     revenu_oeufs_ar:         revenuOeufs,
     cout_achat_ar:           coutAchat,
@@ -149,7 +151,7 @@ async function fetchRawSituationData(pool, lotId) {
   const [lots, morts, croissance, oeufs, venteOeufs, coutAchat, ventePoulets] = await Promise.all([
     makeReq().query(`
       SELECT l.lot_id, l.numero, l.race_id, l.nombre_initial, l.date_entree, l.actif,
-             r.nom AS race_nom, r.prix_nourrit_g, r.prix_vente_g
+             r.nom AS race_nom, r.prix_nourrit_g, r.prix_vente_g, r.prix_oeuf
       FROM Lot l JOIN Race r ON l.race_id = r.race_id
       ${lotFilter} ORDER BY l.lot_id
     `),

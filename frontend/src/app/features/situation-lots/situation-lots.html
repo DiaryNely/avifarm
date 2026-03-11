@@ -41,6 +41,7 @@
               <th>Poids Moy. (g)</th>
               <th>Poids Total (kg)</th>
               <th>Nb Oeufs</th>
+              <th>Val. Oeufs (Ar)</th>
               <th>Valeur Poulets (Ar)</th>
               <th>Val. Unitaire (Ar)</th>
               <th>Oeufs Vendus</th>
@@ -62,6 +63,7 @@
                 <td>{{ s.poids_moyen_g | number:'1.0-0' }}</td>
                 <td>{{ s.poids_total_g / 1000 | number:'1.2-2' }}</td>
                 <td>{{ s.total_oeufs }}</td>
+                <td>{{ s.valeur_oeufs_ar | number:'1.0-0' }}</td>
                 <td>{{ s.valeur_poulets_ar | number:'1.0-0' }}</td>
                 <td>{{ s.prix_vente_unitaire_ar | number:'1.0-0' }}</td>
                 <td>{{ s.nb_oeufs_vendus }}</td>

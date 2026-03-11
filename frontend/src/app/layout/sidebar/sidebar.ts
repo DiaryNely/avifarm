@@ -13,13 +13,17 @@ export class SidebarComponent {
   @Input() collapsed = false;
 
   navItems: NavItem[] = [
-    { path: '/dashboard',     icon: 'analytics',       label: 'Tableau de bord' },
+    { path: '/dashboard',     icon: 'analytics',       label: 'Dashboard' },
     { path: '/races',         icon: 'diversity_3',     label: 'Races' },
     { path: '/croissance',    icon: 'trending_up',     label: 'Croissance' },
     { path: '/lots',          icon: 'groups',          label: 'Lots' },
+
     { path: '/mortalites',    icon: 'health_and_safety', label: 'Mortalités' },
     { path: '/oeufs',         icon: 'egg_alt',         label: 'Oeufs' },
-    { path: '/incubations',   icon: 'nest_eco_leaf',   label: 'Incubations' },
+    
+    { path: '/incubations',   icon: 'nest_eco_leaf',   label: '' },
+    { path: '/incubations',          icon: 'groups',          label: 'incubations' },
+
     { path: '/vente-oeufs',   icon: 'shopping_basket', label: 'Vente Oeufs' },
     { path: '/vente-poulets', icon: 'shopping_cart',   label: 'Vente Poulets' },
     { path: '/cout-achat',    icon: 'payments',        label: "Coûts d'Achat" },

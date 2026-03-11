@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <h1 class="page-title"><span class="material-icons-round">sell</span> Vente des Oeufs</h1>
+      <h1 class="page-title"><span class="material-icons-round">shopping_basket</span> Vente des Oeufs</h1>
       <p class="page-subtitle">Enregistrement des ventes d'oeufs</p>
     </div>
     <button class="btn btn-primary" (click)="openCreate()">
@@ -15,7 +15,7 @@
     @if (loading) {
       <div class="loading-state"><div class="spinner"></div> Chargement...</div>
     } @else if (items.length === 0) {
-      <div class="empty-state"><span class="material-icons-round">sell</span><p>Aucune vente d'oeufs enregistrée</p></div>
+      <div class="empty-state"><span class="material-icons-round">shopping_basket</span><p>Aucune vente d'oeufs enregistrée</p></div>
     } @else {
       <div class="table-wrapper">
         <table class="table">

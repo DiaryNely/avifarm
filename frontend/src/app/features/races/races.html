@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <h1 class="page-title"><span class="material-icons-round">pets</span> Races</h1>
+      <h1 class="page-title"><span class="material-icons-round">diversity_3</span> Races</h1>
       <p class="page-subtitle">Gestion des races de poulets et paramètres de croissance</p>
     </div>
     <button class="btn btn-primary" (click)="openCreate()">
@@ -15,7 +15,7 @@
     @if (loading) {
       <div class="loading-state"><div class="spinner"></div> Chargement...</div>
     } @else if (races.length === 0) {
-      <div class="empty-state"><span class="material-icons-round">pets</span><p>Aucune race enregistrée</p></div>
+      <div class="empty-state"><span class="material-icons-round">diversity_3</span><p>Aucune race enregistrée</p></div>
     } @else {
       <div class="table-wrapper">
         <table class="table">

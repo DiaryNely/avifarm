@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <h1 class="page-title"><span class="material-icons-round">storefront</span> Vente des Poulets</h1>
+      <h1 class="page-title"><span class="material-icons-round">shopping_cart</span> Vente des Poulets</h1>
       <p class="page-subtitle">Enregistrement des ventes de poulets par lot</p>
     </div>
     <button class="btn btn-primary" (click)="openCreate()">
@@ -15,7 +15,7 @@
     @if (loading) {
       <div class="loading-state"><div class="spinner"></div> Chargement...</div>
     } @else if (items.length === 0) {
-      <div class="empty-state"><span class="material-icons-round">storefront</span><p>Aucune vente de poulets enregistrée</p></div>
+      <div class="empty-state"><span class="material-icons-round">shopping_cart</span><p>Aucune vente de poulets enregistrée</p></div>
     } @else {
       <div class="table-wrapper">
         <table class="table">

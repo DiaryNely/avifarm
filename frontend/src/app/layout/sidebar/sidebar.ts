@@ -13,15 +13,15 @@ export class SidebarComponent {
   @Input() collapsed = false;
 
   navItems: NavItem[] = [
-    { path: '/dashboard',     icon: 'dashboard',     label: 'Tableau de bord' },
-    { path: '/races',         icon: 'pets',          label: 'Races' },
-    { path: '/croissance',    icon: 'show_chart',    label: 'Croissance' },
-    { path: '/lots',          icon: 'inventory_2',   label: 'Lots' },
-    { path: '/mortalites',    icon: 'report',        label: 'Mortalités' },
-    { path: '/oeufs',         icon: 'egg',           label: 'Oeufs' },
-    { path: '/incubations',   icon: 'science',       label: 'Incubations' },
-    { path: '/vente-oeufs',   icon: 'sell',          label: 'Vente Oeufs' },
-    { path: '/vente-poulets', icon: 'storefront',    label: 'Vente Poulets' },
-    { path: '/cout-achat',    icon: 'receipt_long',  label: "Coûts d'Achat" },
+    { path: '/dashboard',     icon: 'analytics',       label: 'Tableau de bord' },
+    { path: '/races',         icon: 'diversity_3',     label: 'Races' },
+    { path: '/croissance',    icon: 'trending_up',     label: 'Croissance' },
+    { path: '/lots',          icon: 'groups',          label: 'Lots' },
+    { path: '/mortalites',    icon: 'health_and_safety', label: 'Mortalités' },
+    { path: '/oeufs',         icon: 'egg_alt',         label: 'Oeufs' },
+    { path: '/incubations',   icon: 'nest_eco_leaf',   label: 'Incubations' },
+    { path: '/vente-oeufs',   icon: 'shopping_basket', label: 'Vente Oeufs' },
+    { path: '/vente-poulets', icon: 'shopping_cart',   label: 'Vente Poulets' },
+    { path: '/cout-achat',    icon: 'payments',        label: "Coûts d'Achat" },
   ];
 }

@@ -3,27 +3,27 @@
    ========================================================= */
 
 :root {
-  --primary:        #1E293B;
-  --primary-hover:  #334155;
-  --sidebar-bg:     #0F172A;
-  --sidebar-hover:  #1E293B;
-  --accent:         #10B981;
-  --accent-hover:   #059669;
-  --accent-light:   rgba(16,185,129,.12);
-  --danger:         #EF4444;
-  --danger-hover:   #DC2626;
-  --danger-light:   rgba(239,68,68,.1);
-  --warning:        #F59E0B;
-  --warning-light:  rgba(245,158,11,.1);
-  --info:           #3B82F6;
-  --info-light:     rgba(59,130,246,.1);
-  --bg:             #F1F5F9;
-  --surface:        #FFFFFF;
-  --border:         #E2E8F0;
-  --border-focus:   #10B981;
-  --text:           #1E293B;
-  --text-secondary: #475569;
-  --text-muted:     #94A3B8;
+  --primary:        #8B7355;
+  --primary-hover:  #6F5B43;
+  --sidebar-bg:     #8B7355;
+  --sidebar-hover:  #A68968;
+  --accent:         #D4A574;
+  --accent-hover:   #C69563;
+  --accent-light:   rgba(212,165,116,.15);
+  --danger:         #D97757;
+  --danger-hover:   #C96545;
+  --danger-light:   rgba(217,119,87,.12);
+  --warning:        #E8B563;
+  --warning-light:  rgba(232,181,99,.12);
+  --info:           #7FA7C9;
+  --info-light:     rgba(127,167,201,.12);
+  --bg:             #F9F6E7;
+  --surface:        #FEF6E5;
+  --border:         #E8DCC7;
+  --border-focus:   #D4A574;
+  --text:           #3D3228;
+  --text-secondary: #6B5A47;
+  --text-muted:     #9B8B78;
   --sidebar-width:  260px;
   --header-height:  64px;
   --footer-height:  50px;
@@ -49,8 +49,8 @@ input,select,textarea { font-family: inherit; }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+::-webkit-scrollbar-thumb { background: #D4C4AB; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #C0B09A; }
 
 /* ---- Layout ---- */
 .layout {
@@ -87,11 +87,11 @@ input,select,textarea { font-family: inherit; }
     padding: 12px 16px; text-align: left;
     font-size: .7rem; font-weight: 600; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: .06em;
-    background: #F8FAFC; border-bottom: 1px solid var(--border); white-space: nowrap;
+    background: #F3E5D8; border-bottom: 1px solid var(--border); white-space: nowrap;
   }
   tbody td { padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--text); }
   tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: #FAFBFC; }
+  tbody tr:hover { background: #FCF9F2; }
   .cell-id   { color: var(--text-muted); font-size: .8rem; width: 48px; }
   .cell-name { font-weight: 600; }
   .cell-actions { display: flex; gap: 4px; white-space: nowrap; }

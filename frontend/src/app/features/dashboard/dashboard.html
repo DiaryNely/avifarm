@@ -2,7 +2,7 @@
   <div class="page-header">
     <div>
       <h1 class="page-title">
-        <span class="material-icons-round">dashboard</span>
+        <span class="material-icons-round">analytics</span>
         Tableau de bord
       </h1>
       <p class="page-subtitle">Vue d'ensemble de votre élevage</p>
@@ -72,7 +72,7 @@
 
       <div class="sit-filter-bar">
         <div class="sit-filter-bar__left">
-          <span class="material-icons-round">inventory_2</span>
+          <span class="material-icons-round">groups</span>
           <select [(ngModel)]="selectedLotId">
             @for (s of situations; track s.lot_id) {
               <option [ngValue]="s.lot_id">{{ s.numero }} &mdash; {{ s.race }}</option>
@@ -90,7 +90,7 @@
               Jour {{ selectedSit.jour_actuel }} (S{{ selectedSit.semaine_actuelle }})
             </span>
             <span class="tag" [ngClass]="selectedSit.actif ? 'tag--green' : 'tag--neutral'">
-              <span class="material-icons-round">{{ selectedSit.actif ? 'check_circle' : 'cancel' }}</span>
+              <span class="material-icons-round">{{ selectedSit.actif ? 'verified' : 'cancel' }}</span>
               {{ selectedSit.actif ? 'Actif' : 'Fermé' }}
             </span>
           </div>
@@ -179,7 +179,7 @@
             <div class="kpi-group__title">Revenus</div>
             <div class="kpi-group__cards">
               <div class="kpi-card kpi-card--amber">
-                <span class="material-icons-round">egg</span>
+                <span class="material-icons-round">egg_alt</span>
                 <div class="kpi-card__body">
                   <div class="kpi-card__label">Œufs</div>
                   <div class="kpi-card__value">{{ sit.total_oeufs | number }}</div>
@@ -187,7 +187,7 @@
                 </div>
               </div>
               <div class="kpi-card kpi-card--teal">
-                <span class="material-icons-round">storefront</span>
+                <span class="material-icons-round">shopping_cart</span>
                 <div class="kpi-card__body">
                   <div class="kpi-card__label">Ventes poulets</div>
                   <div class="kpi-card__value">{{ sit.revenu_vente_poulets_ar | number:'1.0-0' }}&nbsp;Ar</div>
@@ -209,7 +209,7 @@
             <div class="kpi-group__title">Bilan</div>
             <div class="kpi-group__cards">
               <div class="kpi-card kpi-card--red">
-                <span class="material-icons-round">receipt_long</span>
+                <span class="material-icons-round">payments</span>
                 <div class="kpi-card__body">
                   <div class="kpi-card__label">Coût d'achat</div>
                   <div class="kpi-card__value">{{ sit.cout_achat_ar | number:'1.0-0' }}&nbsp;Ar</div>

@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <h1 class="page-title"><span class="material-icons-round">receipt_long</span> Coûts d'Achat</h1>
+      <h1 class="page-title"><span class="material-icons-round">payments</span> Coûts d'Achat</h1>
       <p class="page-subtitle">Coûts d'achat des poussins par lot</p>
     </div>
     <button class="btn btn-primary" (click)="openCreate()">
@@ -15,7 +15,7 @@
     @if (loading) {
       <div class="loading-state"><div class="spinner"></div> Chargement...</div>
     } @else if (items.length === 0) {
-      <div class="empty-state"><span class="material-icons-round">receipt_long</span><p>Aucun coût d'achat enregistré</p></div>
+      <div class="empty-state"><span class="material-icons-round">payments</span><p>Aucun coût d'achat enregistré</p></div>
     } @else {
       <div class="table-wrapper">
         <table class="table">

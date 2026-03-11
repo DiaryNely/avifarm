@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <h1 class="page-title"><span class="material-icons-round">egg</span> Incubations</h1>
+      <h1 class="page-title"><span class="material-icons-round">nest_eco_leaf</span> Incubations</h1>
       <p class="page-subtitle">Suivi des oeufs en incubation et des éclosions</p>
     </div>
     <button class="btn btn-primary" (click)="openCreate()">
@@ -16,7 +16,7 @@
       <div class="loading-state"><div class="spinner"></div> Chargement...</div>
     } @else if (items.length === 0) {
       <div class="empty-state">
-        <span class="material-icons-round">egg</span>
+        <span class="material-icons-round">nest_eco_leaf</span>
         <p>Aucune incubation enregistrée</p>
       </div>
     } @else {
@@ -99,7 +99,7 @@
             </div>
           </div>
           <div class="stock-item stock-item--used">
-            <span class="material-icons-round">science</span>
+            <span class="material-icons-round">nest_eco_leaf</span>
             <div>
               <div class="stock-label">Déjà en incubation (en cours)</div>
               <div class="stock-val">{{ oeufsDejaIncubes }}</div>

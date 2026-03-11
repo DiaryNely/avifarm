@@ -37,12 +37,12 @@ export class DashboardComponent implements OnInit {
   }
 
   quickLinks = [
-    { path: '/races',         icon: 'pets',         label: 'Gérer les Races' },
-    { path: '/lots',          icon: 'inventory_2',  label: 'Gérer les Lots' },
-    { path: '/oeufs',         icon: 'egg',          label: 'Enregistrer les Oeufs' },
-    { path: '/vente-poulets', icon: 'storefront',   label: 'Vente des Poulets' },
-    { path: '/incubations',   icon: 'science',      label: 'Incubations' },
-    { path: '/cout-achat',    icon: 'receipt_long', label: "Coûts d'Achat" },
+    { path: '/races',         icon: 'diversity_3',     label: 'Gérer les Races' },
+    { path: '/lots',          icon: 'groups',          label: 'Gérer les Lots' },
+    { path: '/oeufs',         icon: 'egg_alt',         label: 'Enregistrer les Oeufs' },
+    { path: '/vente-poulets', icon: 'shopping_cart',   label: 'Vente des Poulets' },
+    { path: '/incubations',   icon: 'nest_eco_leaf',   label: 'Incubations' },
+    { path: '/cout-achat',    icon: 'payments',        label: "Coûts d'Achat" },
   ];
 
   ngOnInit() {
@@ -65,11 +65,11 @@ export class DashboardComponent implements OnInit {
         if (situations.length > 0 && !this.selectedLotId)
           this.selectedLotId = situations[0].lot_id;
         this.stats = [
-          { label: 'Races',          value: races.length,                           icon: 'pets',          color: 'green' },
-          { label: 'Lots Total',     value: lots.length,                            icon: 'inventory_2',   color: 'blue'  },
-          { label: 'Lots Actifs',    value: lots.filter(x => x.actif).length,       icon: 'check_circle',  color: 'teal'  },
-          { label: 'Mortalités',     value: morts.length,                           icon: 'report',        color: 'red'   },
-          { label: 'Collect. Oeufs', value: oeufs.length,                           icon: 'egg',           color: 'amber' },
+          { label: 'Races',          value: races.length,                           icon: 'diversity_3',   color: 'green' },
+          { label: 'Lots Total',     value: lots.length,                            icon: 'groups',        color: 'blue'  },
+          { label: 'Lots Actifs',    value: lots.filter(x => x.actif).length,       icon: 'verified',      color: 'teal'  },
+          { label: 'Mortalités',     value: morts.length,                           icon: 'health_and_safety', color: 'red'   },
+          { label: 'Collect. Oeufs', value: oeufs.length,                           icon: 'egg_alt',       color: 'amber' },
         ];
         this.loading = false;
       },

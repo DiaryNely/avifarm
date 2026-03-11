@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <h1 class="page-title"><span class="material-icons-round">report</span> Mortalités</h1>
+      <h1 class="page-title"><span class="material-icons-round">health_and_safety</span> Mortalités</h1>
       <p class="page-subtitle">Suivi des mortalités par lot</p>
     </div>
     <button class="btn btn-primary" (click)="openCreate()">
@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="stat-card stat-card--alive">
-      <span class="stat-icon material-icons-round">check_circle</span>
+      <span class="stat-icon material-icons-round">verified</span>
       <div>
         <div class="stat-value">{{ totalAlive }}</div>
         <div class="stat-label">Vivants actuels</div>
@@ -48,7 +48,7 @@
           </div>
           <div class="effectif-stats">
             <div class="effectif-stat effectif-stat--alive">
-              <span class="material-icons-round">check_circle</span>
+              <span class="material-icons-round">verified</span>
               <span>{{ sit.nombre_actuel }} vivants</span>
             </div>
             <div class="effectif-stat effectif-stat--dead">
@@ -82,7 +82,7 @@
       <div class="loading-state"><div class="spinner"></div> Chargement...</div>
     } @else if (filteredItems.length === 0) {
       <div class="empty-state">
-        <span class="material-icons-round">report</span>
+        <span class="material-icons-round">health_and_safety</span>
         <p>Aucune mortalité enregistrée</p>
       </div>
     } @else {

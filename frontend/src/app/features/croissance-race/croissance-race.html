@@ -4,7 +4,7 @@
   <div class="page-header">
     <div>
       <h1 class="page-title">
-        <span class="material-icons-round">show_chart</span> Croissance des Races
+        <span class="material-icons-round">trending_up</span> Croissance des Races
       </h1>
       <p class="page-subtitle">Règles de croissance hebdomadaire et tableau cumulatif par race</p>
     </div>
@@ -46,9 +46,9 @@
 
       @if (selectedRace) {
         <div class="race-info">
-          <span class="info-chip"><span class="material-icons-round">egg</span>Ponte sem. {{ selectedRace.semaine_ponte }}</span>
-          <span class="info-chip"><span class="material-icons-round">science</span>Incub. {{ selectedRace.duree_incubation }} j</span>
-          <span class="info-chip"><span class="material-icons-round">sell</span>{{ selectedRace.prix_vente_g | number:'1.2-2' }} Ar/g</span>
+          <span class="info-chip"><span class="material-icons-round">egg_alt</span>Ponte sem. {{ selectedRace.semaine_ponte }}</span>
+          <span class="info-chip"><span class="material-icons-round">nest_eco_leaf</span>Incub. {{ selectedRace.duree_incubation }} j</span>
+          <span class="info-chip"><span class="material-icons-round">shopping_basket</span>{{ selectedRace.prix_vente_g | number:'1.2-2' }} Ar/g</span>
         </div>
       }
     </div>
@@ -61,7 +61,7 @@
         <div class="loading-state"><div class="spinner"></div> Calcul en cours...</div>
       } @else if (filteredTableau.length === 0) {
         <div class="empty-state">
-          <span class="material-icons-round">show_chart</span>
+          <span class="material-icons-round">trending_up</span>
           <p>Aucune règle de croissance pour cette race.</p>
           <button class="btn btn-primary" style="margin-top:16px" (click)="openCreate()">
             <span class="material-icons-round">add</span> Ajouter la semaine 0

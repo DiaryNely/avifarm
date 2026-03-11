@@ -198,18 +198,18 @@ GO
 -- ============================================================
 
 -- Race
-INSERT INTO Race (nom, prix_nourrit_g, prix_vente_g, prix_oeuf, semaine_ponte, duree_incubation)
-VALUES ('Cobb 500', 150, 200, 500, 20, 45);
+-- INSERT INTO Race (nom, prix_nourrit_g, prix_vente_g, prix_oeuf, semaine_ponte, duree_incubation)
+-- VALUES ('Cobb 500', 150, 200, 500, 20, 45);
 
 
 
--- Lot
-INSERT INTO Lot (numero, race_id, nombre_initial, date_entree)
-VALUES ('Lot 1', 1, 100, '2026-03-09');
+-- -- Lot
+-- INSERT INTO Lot (numero, race_id, nombre_initial, date_entree)
+-- VALUES ('Lot 1', 1, 100, '2026-03-09');
 
--- Coût d'achat
-INSERT INTO CoutAchat (lot_id, cout_total, date_achat)
-VALUES (1, 500000, '2026-03-09');
+-- -- Coût d'achat
+-- INSERT INTO CoutAchat (lot_id, cout_total, date_achat)
+-- VALUES (1, 500000, '2026-03-09');
 
 GO
 

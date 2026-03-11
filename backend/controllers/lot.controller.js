@@ -63,6 +63,17 @@ const lotController = {
       res.json(data);
     } catch (err) { next(err); }
   },
+
+  async getPoidsAkoho(req, res, next) {
+    try {
+      const { raceId, datedebutsakafo, datefinsakafo } = req.query;
+      if (!raceId || !datedebutsakafo || !datefinsakafo)
+        return res.status(400).json({ error: 'Paramètres requis : raceId, datedebutsakafo, datefinsakafo' });
+      const poids = await Lot.getPoidsAkoho(parseInt(raceId), datedebutsakafo, datefinsakafo);
+      if (poids === null) return res.status(404).json({ error: 'Race introuvable' });
+      res.json({ poids_g: poids });
+    } catch (err) { next(err); }
+  },
 };
 
 module.exports = lotController;

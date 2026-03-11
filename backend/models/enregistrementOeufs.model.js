@@ -27,21 +27,21 @@ const EnregistrementOeufs = {
   async create(data) {
     const pool = await getPool();
 
-    // Vérifier que le lot a atteint la semaine de ponte de sa race
-    const lotInfo = await pool.request()
-      .input('lotId', sql.Int, data.lot_id)
-      .query(`
-        SELECT l.date_entree, r.semaine_ponte, r.nom AS race_nom
-        FROM Lot l JOIN Race r ON l.race_id = r.race_id
-        WHERE l.lot_id = @lotId
-      `);
-    if (lotInfo.recordset.length === 0) throw { status: 404, error: 'Lot non trouvé' };
-    const { date_entree, semaine_ponte, race_nom } = lotInfo.recordset[0];
-    const jours = Math.floor((new Date(data.date_collecte) - new Date(date_entree)) / (24 * 60 * 60 * 1000));
-    const semaine = Math.floor(jours / 7);
-    if (semaine < semaine_ponte) {
-      throw { status: 400, error: `La race ${race_nom} ne peut pondre qu'à partir de la semaine ${semaine_ponte}. Le lot est actuellement à la semaine ${semaine}.` };
-    }
+    // // Vérifier que le lot a atteint la semaine de ponte de sa race
+    // const lotInfo = await pool.request()
+    //   .input('lotId', sql.Int, data.lot_id)
+    //   .query(`
+    //     SELECT l.date_entree, r.semaine_ponte, r.nom AS race_nom
+    //     FROM Lot l JOIN Race r ON l.race_id = r.race_id
+    //     WHERE l.lot_id = @lotId
+    //   `);
+    // if (lotInfo.recordset.length === 0) throw { status: 404, error: 'Lot non trouvé' };
+    // const { date_entree, semaine_ponte, race_nom } = lotInfo.recordset[0];
+    // const jours = Math.floor((new Date(data.date_collecte) - new Date(date_entree)) / (24 * 60 * 60 * 1000));
+    // const semaine = Math.floor(jours / 7);
+    // if (semaine < semaine_ponte) {
+    //   throw { status: 400, error: `La race ${race_nom} ne peut pondre qu'à partir de la semaine ${semaine_ponte}. Le lot est actuellement à la semaine ${semaine}.` };
+    // }
 
     const result = await pool.request()
       .input('lot_id',       sql.Int,  data.lot_id)

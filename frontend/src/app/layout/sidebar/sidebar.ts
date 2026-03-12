@@ -30,5 +30,6 @@ export class SidebarComponent {
     { path: '/vente-oeufs',   icon: 'shopping_basket', label: 'Vente Oeufs' },
     { path: '/vente-poulets', icon: 'shopping_cart',   label: 'Vente Poulets' },
     { path: '/cout-achat',    icon: 'payments',        label: "Coûts d'Achat" },
+    { path: '/poids-akoho',   icon: 'monitor_weight',  label: 'Poids Akoho' },
   ];
 }

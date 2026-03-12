@@ -1,0 +1,179 @@
+/* ══════════════════════════════════════════════
+   Formulaire de calcul
+══════════════════════════════════════════════ */
+.calc-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .form-group { flex: 1; min-width: 180px; }
+}
+
+.calc-action {
+  flex-shrink: 0;
+  padding-bottom: 2px;
+
+  .btn { height: 42px; }
+}
+
+.form-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .8rem;
+  margin-top: 12px;
+
+  .material-icons-round { font-size: 16px; }
+
+  &--warn { color: var(--warning); }
+}
+
+/* ══════════════════════════════════════════════
+   Spinner animation
+══════════════════════════════════════════════ */
+.spin {
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ══════════════════════════════════════════════
+   Résultat
+══════════════════════════════════════════════ */
+.result-section { display: flex; flex-direction: column; gap: 20px; }
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+
+  .material-icons-round { font-size: 20px; color: var(--accent); }
+  strong { color: var(--text); }
+  .sep { color: var(--border); }
+}
+
+/* ── Grid des cartes résultat ── */
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.result-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: box-shadow .2s, transform .2s;
+
+  &:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+  &--main {
+    background: #F3E5D8;
+    border-color: rgba(212, 165, 116, .4);
+    grid-column: span 1;
+
+    .result-card__val { font-size: 1.9rem; color: #7A4F2B; }
+    .result-card__icon { background: rgba(212, 165, 116, .25); color: #8B6340; }
+  }
+
+  &--value .result-card__val { font-size: 1.3rem; }
+}
+
+.result-card__icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .material-icons-round { font-size: 26px; }
+
+  &--blue   { background: rgba(127, 167, 201, .15); color: #4A7AB5; }
+  &--orange { background: rgba(232, 181, 99, .18);  color: #B07820; }
+  &--green  { background: rgba(90, 159, 114, .12);  color: #3A7A56; }
+}
+
+.result-card__body { flex: 1; min-width: 0; }
+
+.result-card__val {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+
+  .unit { font-size: .85rem; font-weight: 600; color: var(--text-muted); }
+}
+
+.result-card__lbl {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.result-card__sub {
+  font-size: .78rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ── Barre de progression ── */
+.progress-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progress-card__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-muted);
+  .material-icons-round { font-size: 16px; color: var(--accent); }
+}
+
+.progress-bar-track {
+  height: 12px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #D4A574, #C47F2E);
+  border-radius: 99px;
+  transition: width .5s ease;
+  min-width: 6px;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: .7rem;
+  color: var(--text-muted);
+}

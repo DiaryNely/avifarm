@@ -28,7 +28,10 @@ function computePoidsMoyen(croissance, jours) {
   }
 
   // Interpolation linéaire du gain de la semaine en cours
-  poids += gainSemaineSuivante * (joursRestants / 7);
+
+  if(semaineComplete>0){
+    poids += (gainSemaineSuivante * (joursRestants / 7));
+  }
 
   return Math.round(poids * 100) / 100;
 }

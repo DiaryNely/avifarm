@@ -1,0 +1,156 @@
+<div class="page">
+
+  <!-- ── En-tête ── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <span class="material-icons-round">monitor_weight</span> Poids Estimé – Akoho
+      </h1>
+      <p class="page-subtitle">Calculez le poids moyen d'un poulet selon sa race et son âge</p>
+    </div>
+    @if (hasResult) {
+      <button class="btn btn-outline" (click)="reset()">
+        <span class="material-icons-round">refresh</span> Nouveau calcul
+      </button>
+    }
+  </div>
+
+  @if (error) {
+    <div class="error-msg"><span class="material-icons-round">error</span>{{ error }}</div>
+  }
+
+  <!-- ── Formulaire ── -->
+  <div class="card filter-card">
+    <div class="calc-form">
+
+      <div class="form-group">
+        <label>Race *</label>
+        <select [(ngModel)]="selectedRaceId">
+          <option [ngValue]="null" disabled>— Choisir une race —</option>
+          @for (r of races; track r.race_id) {
+            <option [ngValue]="r.race_id">{{ r.nom }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Date d'entrée (début) *</label>
+        <input type="date" [(ngModel)]="dateDebut" />
+      </div>
+
+      <div class="form-group">
+        <label>Date de référence (fin) *</label>
+        <input type="date" [(ngModel)]="dateFin" [min]="dateDebut" />
+      </div>
+
+      <div class="calc-action">
+        <button
+          class="btn btn-primary"
+          [disabled]="!isFormValid || loading"
+          (click)="calculer()"
+        >
+          @if (loading) {
+            <span class="material-icons-round spin">autorenew</span> Calcul…
+          } @else {
+            <span class="material-icons-round">calculate</span> Calculer
+          }
+        </button>
+      </div>
+
+    </div>
+
+    @if (dateDebut && dateFin && dateFin < dateDebut) {
+      <p class="form-hint form-hint--warn">
+        <span class="material-icons-round">warning</span>
+        La date de référence doit être après la date d'entrée.
+      </p>
+    }
+  </div>
+
+  <!-- ── Résultat ── -->
+  @if (hasResult) {
+    <div class="result-section">
+
+      <div class="result-header">
+        <span class="material-icons-round">diversity_3</span>
+        <span>Race : <strong>{{ raceNom }}</strong></span>
+        <span class="sep">·</span>
+        <span>{{ nbJours }} jour{{ nbJours > 1 ? 's' : '' }} d'élevage</span>
+      </div>
+
+      <div class="result-grid">
+
+        <!-- Poids principal -->
+        <div class="result-card result-card--main">
+          <div class="result-card__icon">
+            <span class="material-icons-round">monitor_weight</span>
+          </div>
+          <div class="result-card__body">
+            <div class="result-card__val">{{ poidsG | number:'1.0-0' }} <span class="unit">g</span></div>
+            <div class="result-card__lbl">Poids moyen estimé</div>
+            <div class="result-card__sub">{{ (poidsG / 1000) | number:'1.2-2' }} kg</div>
+          </div>
+        </div>
+
+        <!-- Semaine -->
+        <div class="result-card">
+          <div class="result-card__icon result-card__icon--blue">
+            <span class="material-icons-round">date_range</span>
+          </div>
+          <div class="result-card__body">
+            <div class="result-card__val">{{ nbSemaine }}</div>
+            <div class="result-card__lbl">Semaine d'âge</div>
+            <div class="result-card__sub">{{ nbJours % 7 }} jour(s) restant(s)</div>
+          </div>
+        </div>
+
+        <!-- Jours -->
+        <div class="result-card">
+          <div class="result-card__icon result-card__icon--orange">
+            <span class="material-icons-round">today</span>
+          </div>
+          <div class="result-card__body">
+            <div class="result-card__val">{{ nbJours }}</div>
+            <div class="result-card__lbl">Jours d'élevage</div>
+            <div class="result-card__sub">Depuis la date d'entrée</div>
+          </div>
+        </div>
+
+        <!-- Valeur estimée -->
+        <div class="result-card result-card--value">
+          <div class="result-card__icon result-card__icon--green">
+            <span class="material-icons-round">payments</span>
+          </div>
+          <div class="result-card__body">
+            <div class="result-card__val">{{ valeurAr | number:'1.0-0' }} <span class="unit">Ar</span></div>
+            <div class="result-card__lbl">Valeur estimée</div>
+            <div class="result-card__sub">au prix de vente/g de la race</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Barre de progression semaines -->
+      <div class="card progress-card">
+        <div class="progress-card__title">
+          <span class="material-icons-round">trending_up</span>
+          Progression de l'âge
+        </div>
+        <div class="progress-bar-track">
+          <div
+            class="progress-bar-fill"
+            [style.width.%]="Math.min(100, (nbSemaine / 12) * 100)"
+          ></div>
+        </div>
+        <div class="progress-labels">
+          <span>0</span>
+          <span>4 sem.</span>
+          <span>8 sem.</span>
+          <span>12 sem.</span>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

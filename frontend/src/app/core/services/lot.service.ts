@@ -17,6 +17,11 @@ export class LotService {
   getPoidsAt(lotId: number, date: string): Observable<{ poids_moyen_g: number; jours: number; prix_vente_g: number }> {
     return this.http.get<{ poids_moyen_g: number; jours: number; prix_vente_g: number }>(`${this.url}/${lotId}/poids`, { params: { date } });
   }
+  getPoidsAkoho(raceId: number, datedebutsakafo: string, datefinsakafo: string): Observable<{ poids_g: number }> {
+    return this.http.get<{ poids_g: number }>(`${this.url}/poids-akoho`, {
+      params: { raceId: raceId.toString(), datedebutsakafo, datefinsakafo }
+    });
+  }
   create(d: Lot): Observable<Lot>                    { return this.http.post<Lot>(this.url, d); }
   update(id: number, d: Lot): Observable<Lot>        { return this.http.put<Lot>(`${this.url}/${id}`, d); }
   delete(id: number): Observable<void>               { return this.http.delete<void>(`${this.url}/${id}`); }

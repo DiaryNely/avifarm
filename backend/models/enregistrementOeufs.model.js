@@ -1,4 +1,57 @@
 const { sql, getPool } = require('../config/db');
+const Incubation = require('./incubation.model');
+
+async function validateCapacitePonte(pool, lotId, dateCollecte, nombreOeufs) {
+  const nb = parseInt(nombreOeufs, 10);
+  if (!Number.isInteger(nb) || nb < 1) {
+    throw Object.assign(new Error("Le nombre d'oeufs doit être un entier ≥ 1."), { statusCode: 422 });
+  }
+
+  const result = await pool.request()
+    .input('lotId', sql.Int, lotId)
+    .input('dateCollecte', sql.Date, dateCollecte)
+    .query(`
+      SELECT l.lot_id, l.date_entree, l.nombre_initial,
+             r.capacite_ponte_max,
+             ISNULL(SUM(CASE WHEN m.date_mort <= @dateCollecte THEN m.nombre_morts ELSE 0 END), 0) AS total_morts_date
+      FROM Lot l
+      JOIN Race r ON l.race_id = r.race_id
+      LEFT JOIN Mortalite m ON m.lot_id = l.lot_id
+      WHERE l.lot_id = @lotId
+      GROUP BY l.lot_id, l.date_entree, l.nombre_initial, r.capacite_ponte_max
+    `);
+
+  const row = result.recordset[0];
+  if (!row) {
+    throw Object.assign(new Error('Lot non trouvé'), { statusCode: 404 });
+  }
+
+  const collecteDate = new Date(dateCollecte);
+  const entreeDate = new Date(row.date_entree);
+  if (collecteDate < entreeDate) {
+    throw Object.assign(new Error('La date de collecte ne peut pas être avant la date d\'entrée du lot.'), { statusCode: 422 });
+  }
+
+  const vivants = Math.max(0, (parseInt(row.nombre_initial, 10) || 0) - (parseInt(row.total_morts_date, 10) || 0));
+  const capacite = parseInt(row.capacite_ponte_max, 10) || 0;
+  const maxOeufs = vivants * capacite;
+
+  if (nb > maxOeufs) {
+    throw Object.assign(
+      new Error(`Nombre d'oeufs invalide: max autorisé = ${maxOeufs} (${vivants} vivants × capacité ${capacite}).`),
+      { statusCode: 422 }
+    );
+  }
+}
+
+function parseTauxPerte(value) {
+  const taux = parseFloat(value);
+  if (Number.isNaN(taux)) return 0;
+  if (taux < 0 || taux > 100) {
+    throw Object.assign(new Error('Le pourcentage de perte doit être entre 0 et 100.'), { statusCode: 422 });
+  }
+  return taux;
+}
 
 const EnregistrementOeufs = {
   async getAll() {
@@ -27,6 +80,9 @@ const EnregistrementOeufs = {
   async create(data) {
     const pool = await getPool();
 
+    await validateCapacitePonte(pool, data.lot_id, data.date_collecte, data.nombre_oeufs);
+    const tauxPerte = parseTauxPerte(data.taux_perte_pct ?? data.taux_reussite_pct ?? 0);
+
     // // Vérifier que le lot a atteint la semaine de ponte de sa race
     // const lotInfo = await pool.request()
     //   .input('lotId', sql.Int, data.lot_id)
@@ -52,11 +108,25 @@ const EnregistrementOeufs = {
         OUTPUT INSERTED.*
         VALUES (@lot_id, @date_collecte, @nombre_oeufs)
       `);
-    return result.recordset[0];
+    const created = result.recordset[0];
+    if (created?.oeuf_id) {
+      await Incubation.ensureAutoIncubationForOeuf(created.oeuf_id, tauxPerte);
+    }
+    return created;
   },
 
   async update(id, data) {
     const pool = await getPool();
+
+    const currentRes = await pool.request()
+      .input('id', sql.Int, id)
+      .query('SELECT lot_id FROM EnregistrementOeufs WHERE oeuf_id = @id');
+    const current = currentRes.recordset[0];
+    if (!current) return null;
+
+    await validateCapacitePonte(pool, current.lot_id, data.date_collecte, data.nombre_oeufs);
+    const tauxPerte = parseTauxPerte(data.taux_perte_pct ?? data.taux_reussite_pct ?? 0);
+
     const result = await pool.request()
       .input('id',           sql.Int,  id)
       .input('date_collecte',sql.Date, data.date_collecte)
@@ -66,11 +136,29 @@ const EnregistrementOeufs = {
         OUTPUT INSERTED.*
         WHERE oeuf_id = @id
       `);
-    return result.recordset[0] || null;
+    const updated = result.recordset[0] || null;
+    if (updated?.oeuf_id) {
+      await Incubation.syncAutoIncubationForOeuf(updated.oeuf_id, tauxPerte);
+    }
+    return updated;
   },
 
   async delete(id) {
     const pool = await getPool();
+
+    const incRes = await pool.request()
+      .input('id', sql.Int, id)
+      .query('SELECT TOP 1 incubation_id, statut FROM Incubation WHERE oeuf_id = @id ORDER BY incubation_id DESC');
+    const incubation = incRes.recordset[0];
+    if (incubation?.statut === 'eclos') {
+      throw Object.assign(new Error('Impossible de supprimer cet enregistrement: incubation déjà éclose et lot créé.'), { statusCode: 422 });
+    }
+    if (incubation?.statut === 'en_cours') {
+      await pool.request()
+        .input('incubationId', sql.Int, incubation.incubation_id)
+        .query('DELETE FROM Incubation WHERE incubation_id = @incubationId');
+    }
+
     const result = await pool.request()
       .input('id', sql.Int, id)
       .query('DELETE FROM EnregistrementOeufs OUTPUT DELETED.oeuf_id WHERE oeuf_id = @id');

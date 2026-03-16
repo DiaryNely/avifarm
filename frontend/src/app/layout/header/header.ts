@@ -10,8 +10,6 @@ const TITLES: Record<string, string> = {
   '/mortalites':    'Mortalités',
   '/oeufs':         'Oeufs',
   '/incubations':   'Incubations',
-  '/vente-oeufs':   'Vente des Oeufs',
-  '/vente-poulets': 'Vente des Poulets',
   '/cout-achat':    "Coûts d'Achat",
 };
 

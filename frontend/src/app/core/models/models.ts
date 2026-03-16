@@ -4,6 +4,7 @@ export interface Race {
   prix_nourrit_g: number;
   prix_vente_g: number;
   prix_oeuf: number;
+  capacite_ponte_max: number;
   semaine_ponte: number;
   duree_incubation: number;
   date_creation?: string;
@@ -47,9 +48,7 @@ export interface LotSituation {
   semaine_actuelle: number;
   nombre_actuel: number;
   total_morts: number;
-  total_vendus: number;
   taux_mortalite: number;
-  revenu_vente_poulets_ar: number;
   poids_moyen_g: number;
   poids_total_g: number;
   valeur_poulets_ar: number;
@@ -59,11 +58,9 @@ export interface LotSituation {
   cout_nourrit_jour_ar: number;
   total_oeufs: number;
   valeur_oeufs_ar: number;
-  nb_oeufs_vendus: number;
-  revenu_oeufs_ar: number;
   cout_achat_ar: number;
-  benefice_ar: number;
-  prix_vente_unitaire_ar: number;
+  valeur_estimee_totale_ar: number;
+  benefice_estime_ar: number;
 }
 
 export interface Mortalite {
@@ -79,12 +76,14 @@ export interface EnregistrementOeufs {
   lot_id: number;
   date_collecte: string;
   nombre_oeufs: number;
+  taux_perte_pct?: number;
 }
 
 export interface Incubation {
   incubation_id?: number;
   oeuf_id: number;
   nombre_incubes: number;
+  taux_perte_pct?: number;
   date_debut: string;
   date_eclosion: string;
   lot_issu_id?: number | null;
@@ -100,25 +99,6 @@ export interface IncubationDetail extends Incubation {
   nombre_oeufs: number;
   lot_issu_numero?: string | null;
   nombre_non_eclos?: number | null;
-}
-
-export interface VenteOeufs {
-  vente_id?: number;
-  oeuf_id: number;
-  nombre_vendus: number;
-  prix_unitaire: number;
-  date_vente: string;
-  montant_total?: number;
-}
-
-export interface VentePoulets {
-  vente_id?: number;
-  lot_id: number;
-  date_vente: string;
-  nombre_vendus: number;
-  poids_moyen_g: number;
-  prix_vente_g: number;
-  montant_total?: number;
 }
 
 export interface CoutAchat {

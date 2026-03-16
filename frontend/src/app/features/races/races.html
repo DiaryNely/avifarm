@@ -22,7 +22,7 @@
           <thead>
             <tr>
               <th>#</th><th>Nom</th><th>Nourrit. (Ar/g)</th><th>Vente (Ar/g)</th>
-              <th>Oeuf (Ar)</th><th>Sem. Ponte</th><th>Incub. (j)</th><th>Actions</th>
+              <th>Oeuf (Ar)</th><th>Capacité max</th><th>Sem. Ponte</th><th>Incub. (j)</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -33,6 +33,7 @@
                 <td>{{ r.prix_nourrit_g | number:'1.2-2' }}</td>
                 <td>{{ r.prix_vente_g | number:'1.2-2' }}</td>
                 <td>{{ r.prix_oeuf | number:'1.2-2' }}</td>
+                <td>{{ r.capacite_ponte_max }}</td>
                 <td>{{ r.semaine_ponte }}</td>
                 <td>{{ r.duree_incubation }}</td>
                 <td class="cell-actions">
@@ -68,6 +69,10 @@
     <div class="form-group">
       <label>Prix Oeuf (Ar) *</label>
       <input type="number" [(ngModel)]="form.prix_oeuf" step="0.01" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Capacité Max de Ponte *</label>
+      <input type="number" [(ngModel)]="form.capacite_ponte_max" min="1" />
     </div>
     <div class="form-group">
       <label>Semaine de Ponte *</label>

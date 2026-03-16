@@ -26,6 +26,7 @@ CREATE TABLE Race (
     prix_nourrit_g  DECIMAL(10,2)     NOT NULL,   -- Prix nourriture en Ar/g
     prix_vente_g    DECIMAL(10,2)     NOT NULL,   -- Prix vente poulet en Ar/g
     prix_oeuf       DECIMAL(10,2)     NOT NULL,   -- Prix vente d'un oeuf en Ar
+    capacite_ponte_max INT            NOT NULL,   -- Oeufs max par poulet (par enregistrement)
     semaine_ponte   INT               NOT NULL,   -- Semaine à partir de laquelle la ponte commence
     duree_incubation INT              NOT NULL,   -- Durée d'incubation en jours
     date_creation   DATETIME          DEFAULT GETDATE()
@@ -105,6 +106,7 @@ CREATE TABLE Incubation (
     incubation_id   INT IDENTITY(1,1) PRIMARY KEY,
     oeuf_id         INT               NOT NULL,          -- Enregistrement d'oeufs source
     nombre_incubes  INT               NOT NULL,          -- Nombre d'oeufs incubés
+    taux_perte_pct  DECIMAL(5,2)      NOT NULL DEFAULT 0, -- % de perte attendu
     date_debut      DATE              NOT NULL,          -- Début d'incubation
     date_eclosion   DATE              NOT NULL,          -- Calculé : date_debut + duree_incubation
     lot_issu_id     INT               NULL,              -- Lot créé après éclosion
@@ -113,7 +115,8 @@ CREATE TABLE Incubation (
         CHECK (statut IN ('en_cours', 'eclos', 'echoue')),
 
     CONSTRAINT FK_Incubation_Oeuf FOREIGN KEY (oeuf_id)      REFERENCES EnregistrementOeufs(oeuf_id),
-    CONSTRAINT FK_Incubation_Lot  FOREIGN KEY (lot_issu_id)  REFERENCES Lot(lot_id)
+    CONSTRAINT FK_Incubation_Lot  FOREIGN KEY (lot_issu_id)  REFERENCES Lot(lot_id),
+    CONSTRAINT CK_Incubation_TauxPerte CHECK (taux_perte_pct >= 0 AND taux_perte_pct <= 100)
 );
 GO
 

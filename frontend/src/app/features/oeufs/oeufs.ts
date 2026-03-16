@@ -54,14 +54,29 @@ export class OeufsComponent implements OnInit {
 
   saveError = '';
 
-  openCreate() { this.editId = null; this.form = {}; this.saveError = ''; this.showModal = true; }
-  openEdit(o: EnregistrementOeufs) { this.editId = o.oeuf_id!; this.form = { ...o }; this.saveError = ''; this.showModal = true; }
+  openCreate() {
+    this.editId = null;
+    this.form = { taux_perte_pct: 0 };
+    this.saveError = '';
+    this.showModal = true;
+  }
+
+  openEdit(o: EnregistrementOeufs) {
+    this.editId = o.oeuf_id!;
+    this.form = { ...o, taux_perte_pct: o.taux_perte_pct ?? 0 };
+    this.saveError = '';
+    this.showModal = true;
+  }
 
   save() {
     this.saveError = '';
     if (!this.form.lot_id) { this.saveError = 'Veuillez sélectionner un lot.'; return; }
     if (!this.form.date_collecte) { this.saveError = 'La date de collecte est obligatoire.'; return; }
     if (!(this.form.nombre_oeufs! >= 1)) { this.saveError = 'Le nombre d\'oeufs doit être ≥ 1.'; return; }
+    if (!(this.form.taux_perte_pct! >= 0 && this.form.taux_perte_pct! <= 100)) {
+      this.saveError = 'Le pourcentage de perte doit être entre 0 et 100.';
+      return;
+    }
     this.saving = true;
     const obs = this.editId ? this.svc.update(this.editId, this.form as EnregistrementOeufs) : this.svc.create(this.form as EnregistrementOeufs);
     obs.subscribe({

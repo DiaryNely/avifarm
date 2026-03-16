@@ -18,6 +18,9 @@ const raceController = {
 
   async create(req, res, next) {
     try {
+      if (!(Number(req.body?.capacite_ponte_max) >= 1)) {
+        return res.status(422).json({ error: 'La capacité maximale de ponte doit être ≥ 1.' });
+      }
       const race = await Race.create(req.body);
       res.status(201).json(race);
     } catch (err) { next(err); }
@@ -25,6 +28,9 @@ const raceController = {
 
   async update(req, res, next) {
     try {
+      if (!(Number(req.body?.capacite_ponte_max) >= 1)) {
+        return res.status(422).json({ error: 'La capacité maximale de ponte doit être ≥ 1.' });
+      }
       const race = await Race.update(parseInt(req.params.id), req.body);
       if (!race) return res.status(404).json({ error: 'Race non trouvée' });
       res.json(race);

@@ -32,8 +32,7 @@ const Mortalite = {
       .input('lotId', sql.Int, data.lot_id)
       .query(`
         SELECT l.nombre_initial
-          - ISNULL((SELECT SUM(m.nombre_morts) FROM Mortalite m WHERE m.lot_id = l.lot_id), 0)
-          - ISNULL((SELECT SUM(vp.nombre_vendus) FROM VentePoulets vp WHERE vp.lot_id = l.lot_id), 0) AS nombre_actuel
+          - ISNULL((SELECT SUM(m.nombre_morts) FROM Mortalite m WHERE m.lot_id = l.lot_id), 0) AS nombre_actuel
         FROM Lot l
         WHERE l.lot_id = @lotId
       `);
@@ -82,8 +81,7 @@ const Mortalite = {
       .input('lotId', sql.Int, original.lot_id)
       .query(`
         SELECT l.nombre_initial
-          - ISNULL((SELECT SUM(m.nombre_morts) FROM Mortalite m WHERE m.lot_id = l.lot_id), 0)
-          - ISNULL((SELECT SUM(vp.nombre_vendus) FROM VentePoulets vp WHERE vp.lot_id = l.lot_id), 0) AS nombre_actuel
+          - ISNULL((SELECT SUM(m.nombre_morts) FROM Mortalite m WHERE m.lot_id = l.lot_id), 0) AS nombre_actuel
         FROM Lot l
         WHERE l.lot_id = @lotId
       `);

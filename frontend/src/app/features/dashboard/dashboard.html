@@ -109,7 +109,7 @@
                 <div class="kpi-card__body">
                   <div class="kpi-card__label">Vivants</div>
                   <div class="kpi-card__value">{{ sit.nombre_actuel | number }}</div>
-                  <div class="kpi-card__sub">/ {{ sit.nombre_actuel + sit.total_morts + sit.total_vendus }}</div>
+                  <div class="kpi-card__sub">/ {{ sit.nombre_actuel + sit.total_morts }}</div>
                 </div>
               </div>
               <div class="kpi-card kpi-card--red">
@@ -121,11 +121,11 @@
                 </div>
               </div>
               <div class="kpi-card kpi-card--neutral">
-                <span class="material-icons-round">shopping_cart</span>
+                <span class="material-icons-round">monitor_heart</span>
                 <div class="kpi-card__body">
-                  <div class="kpi-card__label">Vendus</div>
-                  <div class="kpi-card__value">{{ sit.total_vendus | number }}</div>
-                  <div class="kpi-card__sub">poulets</div>
+                  <div class="kpi-card__label">Mortalité</div>
+                  <div class="kpi-card__value">{{ sit.taux_mortalite }}&nbsp;%</div>
+                  <div class="kpi-card__sub">à date</div>
                 </div>
               </div>
             </div>
@@ -176,22 +176,22 @@
           </div>
 
           <div class="kpi-group">
-            <div class="kpi-group__title">Revenus</div>
+            <div class="kpi-group__title">Valeurs estimées</div>
             <div class="kpi-group__cards">
               <div class="kpi-card kpi-card--amber">
                 <span class="material-icons-round">egg</span>
                 <div class="kpi-card__body">
                   <div class="kpi-card__label">Œufs</div>
                   <div class="kpi-card__value">{{ sit.total_oeufs | number }}</div>
-                  <div class="kpi-card__sub">{{ sit.revenu_oeufs_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">{{ sit.valeur_oeufs_ar | number:'1.0-0' }}&nbsp;Ar</div>
                 </div>
               </div>
               <div class="kpi-card kpi-card--teal">
                 <span class="material-icons-round">storefront</span>
                 <div class="kpi-card__body">
-                  <div class="kpi-card__label">Ventes poulets</div>
-                  <div class="kpi-card__value">{{ sit.revenu_vente_poulets_ar | number:'1.0-0' }}&nbsp;Ar</div>
-                  <div class="kpi-card__sub">réalisé</div>
+                  <div class="kpi-card__label">Valeur totale</div>
+                  <div class="kpi-card__value">{{ sit.valeur_estimee_totale_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">œufs + poulets</div>
                 </div>
               </div>
               <div class="kpi-card kpi-card--blue">
@@ -216,12 +216,12 @@
                   <div class="kpi-card__sub">achat du lot</div>
                 </div>
               </div>
-              <div class="kpi-card kpi-bilan" [ngClass]="sit.benefice_ar >= 0 ? 'kpi-card--green' : 'kpi-card--red'">
-                <span class="material-icons-round">{{ sit.benefice_ar >= 0 ? 'trending_up' : 'trending_down' }}</span>
+              <div class="kpi-card kpi-bilan" [ngClass]="sit.benefice_estime_ar >= 0 ? 'kpi-card--green' : 'kpi-card--red'">
+                <span class="material-icons-round">{{ sit.benefice_estime_ar >= 0 ? 'trending_up' : 'trending_down' }}</span>
                 <div class="kpi-card__body">
-                  <div class="kpi-card__label">Bénéfice net</div>
-                  <div class="kpi-card__value kpi-card__value--lg">{{ sit.benefice_ar | number:'1.0-0' }}&nbsp;Ar</div>
-                  <div class="kpi-card__sub">{{ sit.benefice_ar >= 0 ? '✓ Positif' : '✗ Négatif' }}</div>
+                  <div class="kpi-card__label">Bénéfice estimé</div>
+                  <div class="kpi-card__value kpi-card__value--lg">{{ sit.benefice_estime_ar | number:'1.0-0' }}&nbsp;Ar</div>
+                  <div class="kpi-card__sub">{{ sit.benefice_estime_ar >= 0 ? '✓ Positif' : '✗ Négatif' }}</div>
                 </div>
               </div>
             </div>
@@ -275,9 +275,9 @@
                   <td class="txt-center">{{ s.poids_moyen_g | number:'1.0-0' }}&nbsp;g</td>
                   <td class="txt-right">{{ s.nourrit_total_g / 1000 | number:'1.1-1' }}&nbsp;kg</td>
                   <td class="txt-center">{{ s.total_oeufs | number }}</td>
-                  <td class="txt-right benef-cell" [ngClass]="s.benefice_ar >= 0 ? 'benef--pos' : 'benef--neg'">
-                    <span class="material-icons-round">{{ s.benefice_ar >= 0 ? 'arrow_upward' : 'arrow_downward' }}</span>
-                    {{ s.benefice_ar | number:'1.0-0' }}&nbsp;Ar
+                  <td class="txt-right benef-cell" [ngClass]="s.benefice_estime_ar >= 0 ? 'benef--pos' : 'benef--neg'">
+                    <span class="material-icons-round">{{ s.benefice_estime_ar >= 0 ? 'arrow_upward' : 'arrow_downward' }}</span>
+                    {{ s.benefice_estime_ar | number:'1.0-0' }}&nbsp;Ar
                   </td>
                 </tr>
               }

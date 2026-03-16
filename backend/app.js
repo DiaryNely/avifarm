@@ -8,8 +8,6 @@ const lotRoutes               = require('./routes/lot.routes');
 const mortaliteRoutes         = require('./routes/mortalite.routes');
 const enregistrementOeufsRoutes = require('./routes/enregistrementOeufs.routes');
 const incubationRoutes        = require('./routes/incubation.routes');
-const venteOeufsRoutes        = require('./routes/venteOeufs.routes');
-const ventePouletsRoutes      = require('./routes/ventePoulets.routes');
 const coutAchatRoutes         = require('./routes/coutAchat.routes');
 const simulationRoutes        = require('./routes/simulation.routes');
 
@@ -35,8 +33,6 @@ app.use('/api/lots',                lotRoutes);
 app.use('/api/mortalites',          mortaliteRoutes);
 app.use('/api/oeufs',               enregistrementOeufsRoutes);
 app.use('/api/incubations',         incubationRoutes);
-app.use('/api/vente-oeufs',         venteOeufsRoutes);
-app.use('/api/vente-poulets',       ventePouletsRoutes);
 app.use('/api/cout-achat',          coutAchatRoutes);
 app.use('/api/simulation',          simulationRoutes);
 

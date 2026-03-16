@@ -40,7 +40,6 @@ export class DashboardComponent implements OnInit {
     { path: '/races',         icon: 'pets',         label: 'Gérer les Races' },
     { path: '/lots',          icon: 'inventory_2',  label: 'Gérer les Lots' },
     { path: '/oeufs',         icon: 'egg',          label: 'Enregistrer les Oeufs' },
-    { path: '/vente-poulets', icon: 'storefront',   label: 'Vente des Poulets' },
     { path: '/incubations',   icon: 'science',      label: 'Incubations' },
     { path: '/cout-achat',    icon: 'receipt_long', label: "Coûts d'Achat" },
   ];

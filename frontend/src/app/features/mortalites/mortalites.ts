@@ -73,7 +73,7 @@ export class MortalitesComponent implements OnInit {
   }
 
   get totalInitial(): number {
-    return this.situations.reduce((s, sit) => s + sit.nombre_actuel + sit.total_morts + sit.total_vendus, 0);
+    return this.situations.reduce((s, sit) => s + sit.nombre_actuel + sit.total_morts, 0);
   }
 
   situationFor(lotId: number): LotSituation | undefined {

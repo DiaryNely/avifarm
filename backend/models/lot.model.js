@@ -1,7 +1,6 @@
 const { sql, getPool } = require('../config/db');
 const sim = require('../simulation');
-
-// ── Helpers calcul métier ──────────────────────────────────
+const Incubation = require('./incubation.model');
 
 function daysBetween(dateEntree, refDate) {
   const ref = refDate ? new Date(refDate) : sim.getDate();
@@ -27,8 +26,10 @@ function computePoidsMoyen(croissance, jours) {
     }
   }
 
-  // Interpolation linéaire du gain de la semaine en cours
-  poids += gainSemaineSuivante * (joursRestants / 7);
+  // Pas d'interpolation pendant S0 (les poules ne mangent pas encore)
+  if (semaineComplete > 0) {
+    poids += gainSemaineSuivante * (joursRestants / 7);
+  }
 
   return Math.round(poids * 100) / 100;
 }
@@ -66,10 +67,9 @@ function computeNourritureTotal(croissance, jours, nombreActuel) {
   return total * nombreActuel;
 }
 
-function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap, refDate) {
+function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, coutAchatMap, refDate) {
   const totalMorts    = mortsMap.get(lot.lot_id) || 0;
-  const totalVendus   = vendusMap.get(lot.lot_id) || 0;
-  const nombreActuel  = lot.nombre_initial - totalMorts - totalVendus;
+  const nombreActuel  = lot.nombre_initial - totalMorts;
   const jours         = daysBetween(lot.date_entree, refDate);
   const semaine       = Math.floor(jours / 7);
   const croissance    = croissanceMap.get(lot.race_id) || [];
@@ -82,12 +82,9 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, n
   const nourritJourG  = computeNourritureJour(croissance, jours, nombreActuel);
   const coutNourritJour = nourritJourG * parseFloat(lot.prix_nourrit_g);
   const totalOeufs         = oeufsMap.get(lot.lot_id) || 0;
-  const nbOeufsVendus      = nbOeufsVendusMap.get(lot.lot_id) || 0;
-  const revenuOeufs        = parseFloat(venteOeufsMap.get(lot.lot_id) || 0);
   const coutAchat          = parseFloat(coutAchatMap.get(lot.lot_id) || 0);
-  const revenuVentePoulets = parseFloat(revenuVentePouletsMap.get(lot.lot_id) || 0);
-  const prixVenteUnitaire  = poidsMoyenG * parseFloat(lot.prix_vente_g);
   const valeurOeufs        = totalOeufs * parseFloat(lot.prix_oeuf || 0);
+  const valeurEstimeeTotale = valeurPoulets + valeurOeufs;
 
   return {
     lot_id:           lot.lot_id,
@@ -99,42 +96,46 @@ function buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, n
     semaine_actuelle: semaine,
     nombre_actuel:    nombreActuel,
     total_morts:      totalMorts,
-    total_vendus:     totalVendus,
     taux_mortalite:   lot.nombre_initial > 0
       ? parseFloat(((totalMorts / lot.nombre_initial) * 100).toFixed(1))
       : 0,
     poids_moyen_g:    poidsMoyenG,
     poids_total_g:    poidsTotalG,
     valeur_poulets_ar: valeurPoulets,
-    prix_vente_unitaire_ar: prixVenteUnitaire,
     nourrit_total_g:  nourritTotalG,
     cout_nourrit_ar:  coutNourrit,
     nourrit_jour_g:   nourritJourG,
     cout_nourrit_jour_ar: coutNourritJour,
     total_oeufs:      totalOeufs,
     valeur_oeufs_ar:         valeurOeufs,
-    nb_oeufs_vendus:         nbOeufsVendus,
-    revenu_oeufs_ar:         revenuOeufs,
     cout_achat_ar:           coutAchat,
-    revenu_vente_poulets_ar: revenuVentePoulets,
-    benefice_ar:             revenuVentePoulets + revenuOeufs - coutNourrit - coutAchat,
+    valeur_estimee_totale_ar: valeurEstimeeTotale,
+    benefice_estime_ar:       valeurEstimeeTotale - coutNourrit - coutAchat,
   };
 }
 
 
-async function fetchRawSituationData(pool, lotId) {
-  const lotFilter   = lotId != null ? 'WHERE l.lot_id = @lotId' : '';
-  const mortsFilter = lotId != null ? 'WHERE lot_id = @lotId' : '';
+async function fetchRawSituationData(pool, lotId, refDate) {
+  const effectiveRefDate = refDate ? new Date(refDate) : sim.getDate();
+  const lotsWhere = [];
+  if (lotId != null) lotsWhere.push('l.lot_id = @lotId');
+  lotsWhere.push('l.date_entree <= @refDate');
+  const lotFilter = lotsWhere.length ? `WHERE ${lotsWhere.join(' AND ')}` : '';
+  const mortsWhere = [];
+  if (lotId != null) mortsWhere.push('lot_id = @lotId');
+  if (refDate) mortsWhere.push('date_mort <= @refDate');
+  const mortsFilter = mortsWhere.length ? `WHERE ${mortsWhere.join(' AND ')}` : '';
   const oeufsFilter = lotId != null ? 'WHERE e.lot_id = @lotId' : '';
   const coutFilter  = lotId != null ? 'WHERE lot_id = @lotId' : '';
 
   const makeReq = () => {
     const r = pool.request();
     if (lotId != null) r.input('lotId', sql.Int, lotId);
+    r.input('refDate', sql.Date, effectiveRefDate);
     return r;
   };
 
-  const [lots, morts, croissance, oeufs, venteOeufs, coutAchat, ventePoulets] = await Promise.all([
+  const [lots, morts, croissance, oeufs, coutAchat] = await Promise.all([
     makeReq().query(`
       SELECT l.lot_id, l.numero, l.race_id, l.nombre_initial, l.date_entree, l.actif,
              r.nom AS race_nom, r.prix_nourrit_g, r.prix_vente_g, r.prix_oeuf
@@ -143,23 +144,27 @@ async function fetchRawSituationData(pool, lotId) {
     `),
     makeReq().query(`SELECT lot_id, SUM(nombre_morts) AS total_morts FROM Mortalite ${mortsFilter} GROUP BY lot_id`),
     pool.request().query(`SELECT race_id, semaine, poids_initial, gain_poids, nourrit_semaine FROM CroissanceRace ORDER BY race_id, semaine`),
-    makeReq().query(`SELECT e.lot_id, SUM(e.nombre_oeufs) AS total_oeufs FROM EnregistrementOeufs e ${oeufsFilter} GROUP BY e.lot_id`),
     makeReq().query(`
-      SELECT e.lot_id, SUM(v.nombre_vendus) AS nb_oeufs_vendus, SUM(v.nombre_vendus * v.prix_unitaire) AS revenu_oeufs
-      FROM VenteOeufs v JOIN EnregistrementOeufs e ON v.oeuf_id = e.oeuf_id
-      ${oeufsFilter} GROUP BY e.lot_id
+      SELECT e.lot_id,
+             SUM(
+               CASE
+                 WHEN i.oeuf_id IS NULL THEN e.nombre_oeufs
+                 WHEN i.date_eclosion > @refDate THEN i.nombre_incubes
+                 ELSE 0
+               END
+             ) AS total_oeufs
+      FROM EnregistrementOeufs e
+      JOIN Lot l ON e.lot_id = l.lot_id
+      LEFT JOIN Incubation i ON i.oeuf_id = e.oeuf_id
+      ${oeufsFilter}
+      GROUP BY e.lot_id
     `),
     makeReq().query(`SELECT lot_id, cout_total FROM CoutAchat ${coutFilter}`),
-    makeReq().query(`SELECT lot_id, SUM(nombre_vendus) AS total_vendus, SUM(montant_total) AS revenu_vente FROM VentePoulets ${coutFilter} GROUP BY lot_id`),
   ]);
 
   const mortsMap       = new Map(morts.recordset.map(m => [m.lot_id, m.total_morts]));
   const oeufsMap       = new Map(oeufs.recordset.map(o => [o.lot_id, o.total_oeufs]));
-  const venteOeufsMap     = new Map(venteOeufs.recordset.map(v => [v.lot_id, v.revenu_oeufs]));
-  const nbOeufsVendusMap  = new Map(venteOeufs.recordset.map(v => [v.lot_id, v.nb_oeufs_vendus]));
   const coutAchatMap          = new Map(coutAchat.recordset.map(c => [c.lot_id, parseFloat(c.cout_total)]));
-  const vendusMap             = new Map(ventePoulets.recordset.map(v => [v.lot_id, v.total_vendus]));
-  const revenuVentePouletsMap = new Map(ventePoulets.recordset.map(v => [v.lot_id, parseFloat(v.revenu_vente || 0)]));
 
   const croissanceMap  = new Map();
   for (const row of croissance.recordset) {
@@ -167,7 +172,7 @@ async function fetchRawSituationData(pool, lotId) {
     croissanceMap.get(row.race_id).push(row);
   }
 
-  return { lots: lots.recordset, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap };
+  return { lots: lots.recordset, mortsMap, croissanceMap, oeufsMap, coutAchatMap };
 }
 
 
@@ -188,18 +193,20 @@ const Lot = {
   },
 
   async getSituation(refDate) {
+    await Incubation.processAutoEclosions(refDate || sim.getDate());
     const pool = await getPool();
-    const { lots, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap } =
-      await fetchRawSituationData(pool);
-    return lots.map(lot => buildSituation(lot, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap, refDate));
+    const { lots, mortsMap, croissanceMap, oeufsMap, coutAchatMap } =
+      await fetchRawSituationData(pool, null, refDate);
+    return lots.map(lot => buildSituation(lot, mortsMap, croissanceMap, oeufsMap, coutAchatMap, refDate));
   },
 
   async getSituationById(id, refDate) {
+    await Incubation.processAutoEclosions(refDate || sim.getDate());
     const pool = await getPool();
-    const { lots, mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap } =
-      await fetchRawSituationData(pool, id);
+    const { lots, mortsMap, croissanceMap, oeufsMap, coutAchatMap } =
+      await fetchRawSituationData(pool, id, refDate);
     if (lots.length === 0) return null;
-    return buildSituation(lots[0], mortsMap, croissanceMap, oeufsMap, venteOeufsMap, nbOeufsVendusMap, coutAchatMap, vendusMap, revenuVentePouletsMap, refDate);
+    return buildSituation(lots[0], mortsMap, croissanceMap, oeufsMap, coutAchatMap, refDate);
   },
 
   async create(data) {

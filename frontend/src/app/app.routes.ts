@@ -15,8 +15,6 @@ export const routes: Routes = [
       { path: 'mortalites',    loadComponent: () => import('./features/mortalites/mortalites').then(m => m.MortalitesComponent) },
       { path: 'oeufs',         loadComponent: () => import('./features/oeufs/oeufs').then(m => m.OeufsComponent) },
       { path: 'incubations',   loadComponent: () => import('./features/incubations/incubations').then(m => m.IncubationsComponent) },
-      { path: 'vente-oeufs',   loadComponent: () => import('./features/vente-oeufs/vente-oeufs').then(m => m.VenteOeufsComponent) },
-      { path: 'vente-poulets', loadComponent: () => import('./features/vente-poulets/vente-poulets').then(m => m.VentePouletsComponent) },
       { path: 'cout-achat',    loadComponent: () => import('./features/cout-achat/cout-achat').then(m => m.CoutAchatComponent) },
       { path: 'poids-akoho',    loadComponent: () => import('./features/poids-akoho/poids-akoho').then(m => m.PoidsAkohoComponent) },
     ]

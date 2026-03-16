@@ -31,53 +31,56 @@
         <p>Aucune situation disponible</p>
       </div>
     } @else {
-      <div class="table-wrapper">
-        <table class="table table-situation">
-          <thead>
-            <tr>
-              <th>Lot</th>
-              <th>Semaine</th>
-              <th>Vivants</th>
-              <th>Poids Moy. (g)</th>
-              <th>Poids Total (kg)</th>
-              <th>Nb Oeufs</th>
-              <th>Val. Oeufs (Ar)</th>
-              <th>Valeur Poulets (Ar)</th>
-              <th>Val. Unitaire (Ar)</th>
-              <th>Oeufs Vendus</th>
-              <th>Rev. Oeufs (Ar)</th>
-              <th>Poulets Vendus</th>
-              <th>Rev. Poulets (Ar)</th>
-              <th>Aliment Cumulé (Ar)</th>
-              <th>Aliment/Jour (Ar)</th>
-              <th>Coût Achat (Ar)</th>
-              <th>Bénéfice (Ar)</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (s of situations; track s.lot_id) {
-              <tr>
-                <td class="cell-name">{{ s.numero }}</td>
-                <td><span class="week-badge">S{{ s.semaine_actuelle }}</span> <small class="day-hint">J{{ s.jour_actuel }}</small></td>
-                <td>{{ s.nombre_actuel }}</td>
-                <td>{{ s.poids_moyen_g | number:'1.0-0' }}</td>
-                <td>{{ s.poids_total_g / 1000 | number:'1.2-2' }}</td>
-                <td>{{ s.total_oeufs }}</td>
-                <td>{{ s.valeur_oeufs_ar | number:'1.0-0' }}</td>
-                <td>{{ s.valeur_poulets_ar | number:'1.0-0' }}</td>
-                <td>{{ s.prix_vente_unitaire_ar | number:'1.0-0' }}</td>
-                <td>{{ s.nb_oeufs_vendus }}</td>
-                <td>{{ s.revenu_oeufs_ar | number:'1.0-0' }}</td>
-                <td>{{ s.total_vendus }}</td>
-                <td>{{ s.revenu_vente_poulets_ar | number:'1.0-0' }}</td>
-                <td>{{ s.cout_nourrit_ar | number:'1.0-0' }}</td>
-                <td class="cell-jour">{{ s.cout_nourrit_jour_ar | number:'1.0-0' }}</td>
-                <td>{{ s.cout_achat_ar | number:'1.0-0' }}</td>
-                <td [class]="s.benefice_ar >= 0 ? 'cell-positive' : 'cell-negative'">{{ s.benefice_ar | number:'1.0-0' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+      <div class="situations-grid">
+        @for (s of situations; track s.lot_id) {
+          <article class="s-card">
+            <header class="s-card__header">
+              <div>
+                <h3 class="s-card__title">Lot {{ s.numero }}</h3>
+                <p class="s-card__subtitle">{{ s.race }} • Entrée: {{ s.date_entree | date:'dd/MM/yyyy' }}</p>
+              </div>
+              <div class="s-card__badges">
+                <span class="week-badge">S{{ s.semaine_actuelle }}</span>
+                <span class="day-badge">J{{ s.jour_actuel }}</span>
+              </div>
+            </header>
+
+            <div class="kpi-row">
+              <div class="kpi-pill kpi-pill--alive">
+                <span class="material-icons-round">egg_alt</span>
+                <div>
+                  <div class="kpi-label">Vivants</div>
+                  <div class="kpi-value">{{ s.nombre_actuel | number }}</div>
+                </div>
+              </div>
+              <div class="kpi-pill kpi-pill--dead">
+                <span class="material-icons-round">heart_broken</span>
+                <div>
+                  <div class="kpi-label">Mortalité</div>
+                  <div class="kpi-value">{{ s.total_morts | number }} ({{ s.taux_mortalite }}%)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="s-card__metrics">
+              <div class="metric"><span>Poids moyen</span><strong>{{ s.poids_moyen_g | number:'1.0-0' }} g</strong></div>
+              <div class="metric"><span>Poids total</span><strong>{{ s.poids_total_g / 1000 | number:'1.2-2' }} kg</strong></div>
+              <div class="metric"><span>Oeufs</span><strong>{{ s.total_oeufs | number }}</strong></div>
+              <div class="metric"><span>Valeur oeufs</span><strong>{{ s.valeur_oeufs_ar | number:'1.0-0' }} Ar</strong></div>
+              <div class="metric"><span>Valeur poulets</span><strong>{{ s.valeur_poulets_ar | number:'1.0-0' }} Ar</strong></div>
+              <div class="metric"><span>Valeur estimée totale</span><strong>{{ s.valeur_estimee_totale_ar | number:'1.0-0' }} Ar</strong></div>
+              <div class="metric"><span>Coût aliment cumulé</span><strong>{{ s.cout_nourrit_ar | number:'1.0-0' }} Ar</strong></div>
+              <div class="metric"><span>Coût aliment / jour</span><strong>{{ s.cout_nourrit_jour_ar | number:'1.0-0' }} Ar</strong></div>
+              <div class="metric"><span>Coût achat</span><strong>{{ s.cout_achat_ar | number:'1.0-0' }} Ar</strong></div>
+            </div>
+
+            <footer class="s-card__footer" [class.footer-positive]="s.benefice_estime_ar >= 0" [class.footer-negative]="s.benefice_estime_ar < 0">
+              <span class="material-icons-round">{{ s.benefice_estime_ar >= 0 ? 'trending_up' : 'trending_down' }}</span>
+              <span>Bénéfice estimé</span>
+              <strong>{{ s.benefice_estime_ar | number:'1.0-0' }} Ar</strong>
+            </footer>
+          </article>
+        }
       </div>
     }
   </div>

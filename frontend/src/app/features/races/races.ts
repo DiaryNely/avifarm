@@ -44,6 +44,7 @@ export class RacesComponent implements OnInit {
     if (!(this.form.prix_nourrit_g! > 0)) { this.saveError = 'Le prix de nourriture doit être > 0.'; return; }
     if (!(this.form.prix_vente_g! > 0)) { this.saveError = 'Le prix de vente doit être > 0.'; return; }
     if (!(this.form.prix_oeuf! > 0)) { this.saveError = 'Le prix de l\'oeuf doit être > 0.'; return; }
+    if (!(this.form.capacite_ponte_max! >= 1)) { this.saveError = 'La capacité max de ponte doit être ≥ 1.'; return; }
     if (!(this.form.semaine_ponte! >= 1)) { this.saveError = 'La semaine de ponte doit être ≥ 1.'; return; }
     if (!(this.form.duree_incubation! >= 1)) { this.saveError = 'La durée d\'incubation doit être ≥ 1 jour.'; return; }
     this.saving = true;
